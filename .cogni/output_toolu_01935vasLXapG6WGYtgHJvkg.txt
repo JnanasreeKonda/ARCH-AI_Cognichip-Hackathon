@@ -1,0 +1,21 @@
+=== Command: cd /Users/jnanasreekonda/PycharmProjects/ARCH-AI_Cognichip-Hackathon && /opt/homebrew/bin/vvp test.out 2>&1 | tail -15 (2026-02-20T04:46:34.554Z) ===
+Exit Code: 0
+Output:
+========================================
+Test 1: Sending 1024 inputs...
+Waiting for output...
+✓ Output received: 0x0003fa03 at cycle 1024
+
+Test 2: Sending second batch...
+✓ Second output received: 0x0003fa03 at cycle 2048
+
+========================================
+Simulation Complete
+Total cycles: 2048
+Throughput: 1.00 inputs/cycle
+Status: PASSED ✓
+========================================
+tb/tb_reduce_sum.v:122: $finish called at 20555000 (1ps)
+
+=== End Output ===
+

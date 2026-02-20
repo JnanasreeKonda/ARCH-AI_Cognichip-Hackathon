@@ -1,0 +1,7 @@
+=== Command: cd /Users/jnanasreekonda/PycharmProjects/ARCH-AI_Cognichip-Hackathon && iverilog -g2012 -o test_sim.out rtl/tmp.v tb/tb_reduce_sum.v 2>&1 | head -20 (2026-02-20T04:43:32.532Z) ===
+Exit Code: 0
+Output:
+zsh:1: command not found: iverilog
+
+=== End Output ===
+

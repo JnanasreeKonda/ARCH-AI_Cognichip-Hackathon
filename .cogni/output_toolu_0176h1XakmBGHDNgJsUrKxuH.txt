@@ -1,0 +1,11 @@
+=== Command: which iverilog || find /opt/homebrew -name "iverilog" 2>/dev/null | head -5 (2026-02-20T04:43:45.291Z) ===
+Exit Code: 0
+Output:
+iverilog not found
+/opt/homebrew/bin/iverilog
+/opt/homebrew/include/iverilog
+/opt/homebrew/Cellar/icarus-verilog/12.0/bin/iverilog
+/opt/homebrew/Cellar/icarus-verilog/12.0/include/iverilog
+
+=== End Output ===
+

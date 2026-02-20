@@ -1,0 +1,13 @@
+=== Command: python3 test_gemini.py (2026-02-20T04:26:01.590Z) ===
+Exit Code: 1
+Output:
+============================================================
+ Gemini API Diagnostic Test
+============================================================
+
+1. Checking GEMINI_API_KEY environment variable...
+   ✗ GEMINI_API_KEY not set!
+   Set it with: export GEMINI_API_KEY='your-key-here'
+
+=== End Output ===
+

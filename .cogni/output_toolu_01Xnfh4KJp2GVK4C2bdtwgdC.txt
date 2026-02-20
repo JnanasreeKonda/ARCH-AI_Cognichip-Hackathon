@@ -1,0 +1,8 @@
+=== Command: cd /Users/jnanasreekonda/PycharmProjects/ARCH-AI_Cognichip-Hackathon && /opt/homebrew/bin/iverilog -g2012 -o test.out rtl/tmp.v tb/tb_reduce_sum.v 2>&1 (2026-02-20T04:46:00.962Z) ===
+Exit Code: 2
+Output:
+tb/tb_reduce_sum.v:79: sorry: break statements not supported.
+tb/tb_reduce_sum.v:106: sorry: break statements not supported.
+
+=== End Output ===
+

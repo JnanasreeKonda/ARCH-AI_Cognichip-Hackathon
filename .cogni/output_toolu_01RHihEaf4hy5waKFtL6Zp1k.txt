@@ -1,0 +1,23 @@
+=== Command: export RUN_SIMULATION=false && cd /Users/jnanasreekonda/PycharmProjects/ARCH-AI_Cognichip-Hackathon && python3 main.py 2>&1 | head -80 (2026-02-20T04:47:52.566Z) ===
+Exit Code: 0
+Output:
+
+======================================================================
+ MICROARCHITECTURE OPTIMIZATION
+======================================================================
+
+📋 Objective: Minimize Area-Efficiency Product
+🔍 Search Space: PAR ∈ {1,2,4,8,16,32}, BUFFER_DEPTH ∈ {256,512,1024,2048}
+🔄 Iterations: 5
+
+======================================================================
+🤖 Agent Mode: HEURISTIC
+Warning: Yosys returned error code 127
+DEBUG: Yosys output saved to yosys_output.log
+Traceback (most recent call last):
+  File "/Users/jnanasreekonda/PycharmProjects/ARCH-AI_Cognichip-Hackathon/main.py", line 144, in <module>
+    metrics["area_per_throughput"] = area / par if par > 0 else float('inf')
+TypeError: unsupported operand type(s) for /: 'NoneType' and 'int'
+
+=== End Output ===
+

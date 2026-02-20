@@ -1,0 +1,6 @@
+=== Command: cd /Users/jnanasreekonda/PycharmProjects/ARCH-AI_Cognichip-Hackathon && python3 -c "from tools.simulate import generate_testbench; generate_testbench(2, 1024)" && /opt/homebrew/bin/iverilog -g2012 -o test.out rtl/tmp.v tb/tb_reduce_sum.v 2>&1 | head -10 (2026-02-20T04:46:27.515Z) ===
+Exit Code: 0
+Output:
+
+=== End Output ===
+
