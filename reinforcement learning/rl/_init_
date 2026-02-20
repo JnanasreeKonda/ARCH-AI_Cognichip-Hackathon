@@ -1,0 +1,10 @@
+"""
+Reinforcement Learning Module for Hardware Design Optimization
+
+This module contains DQN-based agents for intelligent design space exploration.
+"""
+
+from .dqn_agent import DQNAgent, DQN, ReplayBuffer
+
+__all__ = ['DQNAgent', 'DQN', 'ReplayBuffer']
+__version__ = '1.0.0'
