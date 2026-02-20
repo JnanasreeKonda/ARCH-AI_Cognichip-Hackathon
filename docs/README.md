@@ -16,3 +16,11 @@ This directory contains comprehensive documentation for the ARCH-AI project.
 
 - [Getting Started](../README.md) - Project README
 - [Requirements](../requirements.txt) - Python dependencies
+- [Yosys Setup](../YOSYS_QUICK_SETUP.md) - Yosys integration guide (✅ Now integrated!)
+
+## Key Features
+
+- ✅ **Yosys Integration**: Fully integrated with automatic detection
+- ✅ **Real Hardware Metrics**: Uses actual synthesis results (not estimates)
+- ✅ **Automatic Setup**: No manual PATH configuration needed
+- ✅ **Graceful Fallback**: Works even if Yosys unavailable

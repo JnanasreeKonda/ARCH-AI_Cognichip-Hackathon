@@ -1,7 +1,7 @@
 
 module reduce_sum #(
     parameter PAR = 2,
-    parameter BUFFER_DEPTH = 256
+    parameter BUFFER_DEPTH = 512
 ) (
     input clk,
     input rst,
@@ -12,7 +12,7 @@ module reduce_sum #(
 );
 
 reg [31:0] acc [0:PAR-1];
-reg [7:0] count;
+reg [8:0] count;
 integer i;
 
 reg [31:0] final_sum;

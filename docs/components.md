@@ -40,13 +40,21 @@
 
 ### 3. Synthesis Module (`tools/run_yosys.py`)
 
-**Purpose**: Hardware synthesis and metrics extraction
+**Purpose**: Hardware synthesis and metrics extraction using Yosys
+
+**Status**: ✅ Fully integrated with automatic Yosys detection
 
 **Key Functions**:
-- `synthesize(verilog_file, debug=False)`: Synthesize design and extract metrics
+- `synthesize(verilog_file, debug=False)`: Synthesize design and extract real hardware metrics
+
+**Yosys Detection**:
+- Automatically checks system PATH
+- Detects OSS CAD Suite installation (Windows)
+- Handles PATH setup for DLL dependencies
+- Falls back to estimated metrics if Yosys unavailable
 
 **Returns**:
-- `area`: Total cell count (or None if failed)
+- `area`: Total cell count (real synthesis results)
 - `log`: Yosys output log
 - `metrics`: Dictionary with hardware metrics
 

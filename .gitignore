@@ -46,3 +46,9 @@ tb/tb_*.v
 # Keep directory structure
 !logs/.gitkeep
 !results/.gitkeep
+
+# Yosys source code (large repository)
+yosys/
+
+# Diagnostic/test scripts output
+*.log

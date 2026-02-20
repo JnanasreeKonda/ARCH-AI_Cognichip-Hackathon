@@ -5,7 +5,7 @@ An intelligent microarchitecture optimization framework that uses Large Language
 ## Features
 
 - **LLM-Powered Design Exploration**: Uses OpenAI GPT-4, Anthropic Claude, or Google Gemini to intelligently propose design parameters
-- **Hardware Synthesis**: Integrates with Yosys for accurate gate-level synthesis and metrics
+- **Hardware Synthesis**: Fully integrated with Yosys for accurate gate-level synthesis and real hardware metrics
 - **Multi-Objective Optimization**: Balances area, performance, and efficiency with customizable constraints
 - **Comprehensive Reporting**: Generates detailed reports, visualizations, and a unified dashboard
 - **Pareto Frontier Analysis**: Identifies optimal trade-off designs
@@ -14,7 +14,7 @@ An intelligent microarchitecture optimization framework that uses Large Language
 ## Requirements
 
 - Python 3.8+
-- Yosys (optional, for accurate synthesis metrics)
+- Yosys (integrated - automatically detects OSS CAD Suite installation)
 - Icarus Verilog (optional, for functional simulation)
 
 ## Installation
@@ -104,7 +104,7 @@ The optimization generates:
 
 1. **Design Proposal**: LLM agent analyzes exploration history and proposes next design parameters
 2. **RTL Generation**: Dynamic Verilog code generation based on proposed parameters
-3. **Synthesis**: Yosys synthesizes the design to extract hardware metrics
+3. **Synthesis**: Yosys synthesizes the design to extract real hardware metrics (automatically detects OSS CAD Suite or system installation)
 4. **Evaluation**: Objective function evaluates design quality considering constraints
 5. **Iteration**: Process repeats, with LLM learning from previous results
 6. **Reporting**: Comprehensive reports and visualizations generated

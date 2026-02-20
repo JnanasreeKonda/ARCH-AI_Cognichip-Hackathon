@@ -134,27 +134,34 @@ The `reduce_sum` module implements:
 
 ## Synthesis Integration
 
-### Yosys Synthesis
+### Yosys Synthesis (Integrated)
 
-The `tools/run_yosys.py` module handles hardware synthesis:
+The `tools/run_yosys.py` module handles hardware synthesis with automatic Yosys detection:
 
 ```python
 def synthesize(verilog_file, debug=False):
-    # Check Yosys availability
-    if not yosys_available():
-        return estimate_metrics(verilog_file)
+    # Automatically detect Yosys in multiple locations:
+    # 1. System PATH
+    # 2. OSS CAD Suite installation (Downloads/oss-cad-suite/bin/)
+    # 3. Local build (yosys/yosys.exe)
+    
+    # For OSS CAD Suite, automatically sets PATH to include bin/ and lib/
+    # directories for proper DLL resolution
     
     # Run Yosys synthesis
-    yosys_script = """
-    read_verilog {file}
-    synth -top reduce_sum
-    stat
-    """
+    yosys_script = "read_verilog {file}; synth; stat"
     
-    # Parse output for metrics
+    # Parse output for real hardware metrics
     metrics = parse_yosys_output(output)
     return metrics
 ```
+
+**Key Features:**
+- Automatic detection of Yosys installation
+- Support for OSS CAD Suite (Windows)
+- Proper environment setup for DLL dependencies
+- Falls back to estimated metrics if Yosys unavailable
+- Real hardware metrics: total cells, flip-flops, logic cells, wires
 
 ### Metrics Extraction
 
@@ -166,23 +173,18 @@ Key metrics extracted:
 
 ### Fallback Estimation
 
-When Yosys is unavailable, metrics are estimated:
+When Yosys is unavailable, metrics are estimated based on design parameters. However, **Yosys is now fully integrated** and will be used automatically when available.
 
-```python
-def estimate_metrics(par, buffer_depth):
-    addr_width = ceil(log2(buffer_depth))
-    
-    # Estimated based on design parameters
-    flip_flops = par * 32 + addr_width + 1
-    logic_cells = par * 50 + buffer_depth // 4
-    total_cells = flip_flops + logic_cells
-    
-    return {
-        'total_cells': total_cells,
-        'flip_flops': flip_flops,
-        'logic_cells': logic_cells
-    }
-```
+**Yosys Integration Status:**
+- ✅ Automatically detects OSS CAD Suite installation
+- ✅ Handles PATH setup for DLL dependencies
+- ✅ Provides real synthesis metrics (not estimates)
+- ✅ Falls back gracefully if Yosys unavailable
+
+**Installation:**
+1. Download OSS CAD Suite from: https://github.com/YosysHQ/oss-cad-suite-build/releases
+2. Extract to `Downloads/oss-cad-suite/`
+3. The code automatically detects and uses it - no manual PATH setup required!
 
 ## Objective Function
 

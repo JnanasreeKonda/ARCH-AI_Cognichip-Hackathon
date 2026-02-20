@@ -24,10 +24,45 @@ def synthesize(verilog_file, debug=False):
         - log: Yosys output log
         - metrics_dict: Dictionary with hardware metrics
     """
-    # Check if yosys is available
-    try:
-        subprocess.run(['yosys', '-V'], capture_output=True, timeout=2, check=True)
-    except (subprocess.CalledProcessError, FileNotFoundError, subprocess.TimeoutExpired):
+    # Check for Yosys in multiple locations
+    yosys_paths = [
+        'yosys',  # System PATH
+        # OSS CAD Suite common location
+        os.path.join(os.path.expanduser("~"), "Downloads", "oss-cad-suite", "bin", "yosys.exe"),
+        os.path.join("C:", "Users", os.getenv("USERNAME", ""), "Downloads", "oss-cad-suite", "bin", "yosys.exe"),
+        # Local build
+        os.path.join(os.path.dirname(__file__), '..', 'yosys', 'yosys.exe'),  # Local build
+        os.path.join(os.path.dirname(__file__), '..', 'yosys', 'yosys'),  # Local build (Unix)
+    ]
+    
+    yosys_cmd = None
+    yosys_workdir = None
+    yosys_env = None
+    for path in yosys_paths:
+        try:
+            if os.path.exists(path) if os.path.sep in path else True:
+                # For OSS CAD Suite, need to run from bin directory and set PATH for DLLs
+                if 'oss-cad-suite' in path or ('bin' in path and 'oss-cad' in path):
+                    workdir = os.path.dirname(path) if os.path.isfile(path) else path
+                    # OSS CAD Suite needs both bin and lib in PATH
+                    oss_base = os.path.dirname(os.path.dirname(path))  # Go up from bin/
+                    lib_dir = os.path.join(oss_base, 'lib')
+                    env = os.environ.copy()
+                    env['PATH'] = f"{os.path.dirname(path)};{lib_dir};{env.get('PATH', '')}"
+                    result = subprocess.run([path, '-V'], capture_output=True, timeout=5, 
+                                           check=True, cwd=workdir, text=True, env=env)
+                    yosys_cmd = path
+                    yosys_workdir = workdir
+                    yosys_env = env
+                    break
+                else:
+                    result = subprocess.run([path, '-V'], capture_output=True, timeout=2, check=True)
+                    yosys_cmd = path
+                    break
+        except (subprocess.CalledProcessError, FileNotFoundError, subprocess.TimeoutExpired, OSError):
+            continue
+    
+    if yosys_cmd is None:
         # Fallback: Use estimated metrics when Yosys is not available
         print("WARNING: Yosys not found - using estimated synthesis metrics")
         print("(Install Yosys for accurate results: https://github.com/YosysHQ/yosys/releases)")
@@ -38,7 +73,6 @@ def synthesize(verilog_file, debug=False):
                 rtl_content = f.read()
             
             # Extract PAR and BUFFER_DEPTH from RTL
-            import re
             par_match = re.search(r'parameter\s+PAR\s*=\s*(\d+)', rtl_content)
             buffer_match = re.search(r'parameter\s+BUFFER_DEPTH\s*=\s*(\d+)', rtl_content)
             
@@ -77,9 +111,31 @@ def synthesize(verilog_file, debug=False):
             return None, "", {'total_cells': None, 'flip_flops': 0, 'logic_cells': None, 'wires': None}
     
     # Enhanced synthesis with ABC for timing and area estimation
-    cmd = f'yosys -p "read_verilog {verilog_file}; synth; stat"'
+    # Use the detected yosys command
+    yosys_script = f'read_verilog {verilog_file}; synth; stat'
     try:
-        result = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT).decode()
+        # For OSS CAD Suite, run from bin directory with proper PATH for DLLs
+        if yosys_workdir and yosys_env:
+            result = subprocess.check_output(
+                [yosys_cmd, '-p', yosys_script],
+                stderr=subprocess.STDOUT,
+                timeout=30,
+                cwd=yosys_workdir,
+                env=yosys_env
+            ).decode()
+        elif yosys_workdir:
+            result = subprocess.check_output(
+                [yosys_cmd, '-p', yosys_script],
+                stderr=subprocess.STDOUT,
+                timeout=30,
+                cwd=yosys_workdir
+            ).decode()
+        else:
+            result = subprocess.check_output(
+                [yosys_cmd, '-p', yosys_script],
+                stderr=subprocess.STDOUT,
+                timeout=30
+            ).decode()
     except subprocess.CalledProcessError as e:
         result = e.output.decode()
         print(f"Warning: Yosys returned error code {e.returncode}")
