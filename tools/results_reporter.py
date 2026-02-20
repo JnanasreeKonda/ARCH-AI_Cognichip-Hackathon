@@ -23,6 +23,58 @@ except ImportError:
     MATPLOTLIB_AVAILABLE = False
     print("⚠️  matplotlib not available - install with: pip install matplotlib")
 
+try:
+    import seaborn as sns
+    sns.set_style("whitegrid")
+    SEABORN_AVAILABLE = True
+except ImportError:
+    SEABORN_AVAILABLE = False
+
+# Import enhanced visualizations
+try:
+    from tools.enhanced_visualizations import (
+        generate_3d_design_space,
+        generate_statistical_analysis,
+        generate_power_estimation_plot
+    )
+    ENHANCED_VIZ_AVAILABLE = True
+except ImportError:
+    ENHANCED_VIZ_AVAILABLE = False
+
+# Import new features
+try:
+    from tools.pareto_analysis import (
+        generate_pareto_frontier_plot,
+        generate_pareto_report
+    )
+    PARETO_AVAILABLE = True
+except ImportError:
+    PARETO_AVAILABLE = False
+
+try:
+    from tools.timing_analysis import (
+        add_timing_to_metrics,
+        generate_timing_analysis_plot
+    )
+    TIMING_AVAILABLE = True
+except ImportError:
+    TIMING_AVAILABLE = False
+
+try:
+    from tools.comparison_table import (
+        generate_comparison_table,
+        generate_comparison_report
+    )
+    COMPARISON_AVAILABLE = True
+except ImportError:
+    COMPARISON_AVAILABLE = False
+
+try:
+    from tools.dashboard import generate_comprehensive_dashboard
+    DASHBOARD_AVAILABLE = True
+except ImportError:
+    DASHBOARD_AVAILABLE = False
+
 
 def export_to_json(history: List[Tuple[Dict, Dict]], best_design: Tuple[Dict, Dict], 
                    filename: str = "results/optimization_results.json"):
@@ -111,6 +163,10 @@ def generate_visualizations(history: List[Tuple[Dict, Dict]], best_design: Tuple
     total_cells = [h[1].get('total_cells', 0) for h in history]
     flip_flops = [h[1].get('flip_flops', 0) for h in history]
     logic_cells = [h[1].get('logic_cells', 0) for h in history]
+    
+    # Use seaborn style if available
+    if SEABORN_AVAILABLE:
+        plt.style.use('seaborn-v0_8-darkgrid')
     
     # Create figure with subplots
     fig = plt.figure(figsize=(16, 10))
@@ -275,6 +331,7 @@ ITERATION HISTORY
 
 
 def generate_all_reports(history: List[Tuple[Dict, Dict]], best_design: Tuple[Dict, Dict]):
+    """Generate all reports and visualizations including enhanced features"""
     """Generate all reports and visualizations"""
     
     print("\n" + "="*70)
@@ -297,7 +354,7 @@ def generate_all_reports(history: List[Tuple[Dict, Dict]], best_design: Tuple[Di
     except Exception as e:
         print(f"⚠️  CSV export failed: {e}")
     
-    # Visualizations
+    # Standard visualizations
     try:
         f = generate_visualizations(history, best_design)
         if f:
@@ -305,12 +362,142 @@ def generate_all_reports(history: List[Tuple[Dict, Dict]], best_design: Tuple[Di
     except Exception as e:
         print(f"⚠️  Visualization failed: {e}")
     
+    # Enhanced visualizations
+    if ENHANCED_VIZ_AVAILABLE:
+        try:
+            f = generate_3d_design_space(history)
+            if f:
+                files_created.append(f)
+        except Exception as e:
+            print(f"⚠️  3D visualization failed: {e}")
+        
+        try:
+            f = generate_statistical_analysis(history)
+            if f:
+                files_created.append(f)
+        except Exception as e:
+            print(f"⚠️  Statistical analysis failed: {e}")
+        
+        try:
+            f = generate_power_estimation_plot(history)
+            if f:
+                files_created.append(f)
+        except Exception as e:
+            print(f"⚠️  Power analysis failed: {e}")
+    
+    # Pareto Frontier Analysis
+    if PARETO_AVAILABLE:
+        try:
+            f, pareto_optimal = generate_pareto_frontier_plot(history)
+            if f:
+                files_created.append(f)
+            # Generate Pareto report
+            try:
+                f = generate_pareto_report(pareto_optimal)
+                if f:
+                    files_created.append(f)
+            except Exception as e:
+                print(f"⚠️  Pareto report failed: {e}")
+        except Exception as e:
+            print(f"⚠️  Pareto analysis failed: {e}")
+    
+    # Timing Analysis
+    if TIMING_AVAILABLE:
+        try:
+            # Add timing to metrics first
+            history_with_timing = add_timing_to_metrics(history)
+            f = generate_timing_analysis_plot(history_with_timing)
+            if f:
+                files_created.append(f)
+        except Exception as e:
+            print(f"⚠️  Timing analysis failed: {e}")
+    
+    # Comparison Table
+    if COMPARISON_AVAILABLE:
+        try:
+            f = generate_comparison_table(history)
+            if f:
+                files_created.append(f)
+            f = generate_comparison_report(history)
+            if f:
+                files_created.append(f)
+        except Exception as e:
+            print(f"⚠️  Comparison table failed: {e}")
+    
     # Text report
     try:
         f = generate_report(history, best_design)
         files_created.append(f)
     except Exception as e:
         print(f"⚠️  Report generation failed: {e}")
+    
+    # Statistical analysis report
+    try:
+        from tools.statistical_analysis import generate_statistical_report
+        f = generate_statistical_report(history)
+        if f:
+            files_created.append(f)
+    except Exception as e:
+        print(f"⚠️  Statistical report failed: {e}")
+    
+    # Export best design as Verilog
+    try:
+        from tools.comparison_tools import export_best_design_verilog
+        if best_design:
+            best_params, best_metrics = best_design
+            f = export_best_design_verilog(best_params, best_metrics)
+            if f:
+                files_created.append(f)
+    except Exception as e:
+        print(f"⚠️  Verilog export failed: {e}")
+    
+    # Comprehensive Dashboard (All-in-one view)
+    if DASHBOARD_AVAILABLE:
+        try:
+            f = generate_comprehensive_dashboard(history, best_design)
+            if f:
+                files_created.append(f)
+                print(f"🎯 Saved comprehensive dashboard to {f}")
+        except Exception as e:
+            print(f"⚠️  Dashboard generation failed: {e}")
+    
+    # Animated Convergence GIF
+    try:
+        from tools.animated_convergence import create_convergence_animation
+        f = create_convergence_animation(history)
+        if f:
+            files_created.append(f)
+    except Exception as e:
+        print(f"⚠️  Convergence animation failed: {e}")
+    
+    # Design Space Heatmap
+    try:
+        from tools.design_space_heatmap import generate_design_space_heatmap
+        f = generate_design_space_heatmap(history)
+        if f:
+            files_created.append(f)
+    except Exception as e:
+        print(f"⚠️  Design space heatmap failed: {e}")
+    
+    # Success Rate Metrics
+    try:
+        from tools.success_metrics import generate_success_metrics_report, generate_success_metrics_plot
+        f = generate_success_metrics_report(history)
+        if f:
+            files_created.append(f)
+        f = generate_success_metrics_plot(history)
+        if f:
+            files_created.append(f)
+    except Exception as e:
+        print(f"⚠️  Success metrics failed: {e}")
+    
+    # LLM vs Traditional Comparison Table
+    try:
+        from tools.comparison_table import generate_llm_vs_traditional_table
+        # This can be called separately with baseline comparison results
+        # For now, just ensure the function is available
+    except Exception as e:
+        pass
     
     print("\n✨ Report generation complete!")
     print(f"📁 {len(files_created)} files created in 'results/' directory\n")

@@ -1,6 +1,6 @@
 
 module reduce_sum #(
-    parameter PAR = 4,
+    parameter PAR = 2,
     parameter BUFFER_DEPTH = 256
 ) (
     input clk,

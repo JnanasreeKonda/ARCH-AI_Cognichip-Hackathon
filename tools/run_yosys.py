@@ -1,8 +1,81 @@
+"""
+Yosys Synthesis Integration
+
+Handles hardware synthesis using Yosys and extracts hardware metrics.
+Falls back to estimated metrics if Yosys is not available.
+"""
+
 import subprocess
 import re
 import os
 
+
 def synthesize(verilog_file, debug=False):
+    """
+    Synthesize Verilog design using Yosys and extract hardware metrics.
+    
+    Args:
+        verilog_file: Path to Verilog file to synthesize
+        debug: If True, print detailed Yosys output
+        
+    Returns:
+        Tuple of (area, log, metrics_dict) where:
+        - area: Total cell count (or None if synthesis failed)
+        - log: Yosys output log
+        - metrics_dict: Dictionary with hardware metrics
+    """
+    # Check if yosys is available
+    try:
+        subprocess.run(['yosys', '-V'], capture_output=True, timeout=2, check=True)
+    except (subprocess.CalledProcessError, FileNotFoundError, subprocess.TimeoutExpired):
+        # Fallback: Use estimated metrics when Yosys is not available
+        print("WARNING: Yosys not found - using estimated synthesis metrics")
+        print("(Install Yosys for accurate results: https://github.com/YosysHQ/yosys/releases)")
+        
+        # Read RTL to estimate based on parameters
+        try:
+            with open(verilog_file, 'r') as f:
+                rtl_content = f.read()
+            
+            # Extract PAR and BUFFER_DEPTH from RTL
+            import re
+            par_match = re.search(r'parameter\s+PAR\s*=\s*(\d+)', rtl_content)
+            buffer_match = re.search(r'parameter\s+BUFFER_DEPTH\s*=\s*(\d+)', rtl_content)
+            
+            par = int(par_match.group(1)) if par_match else 4
+            buffer_depth = int(buffer_match.group(1)) if buffer_match else 1024
+            
+            # Estimate metrics based on design parameters
+            # These are rough estimates based on typical synthesis results
+            addr_width = int(__import__('math').ceil(__import__('math').log2(buffer_depth)))
+            
+            # Estimated cell counts (based on typical synthesis)
+            # Each accumulator: ~50 cells, address counter: ~20 cells, control: ~30 cells
+            base_cells = 100
+            acc_cells_per_par = 50
+            counter_cells = 20 + (addr_width * 5)
+            control_cells = 30
+            
+            total_cells = base_cells + (par * acc_cells_per_par) + counter_cells + control_cells
+            flip_flops = (par * 32) + addr_width + 2  # 32-bit accs per PAR + counter + control
+            logic_cells = total_cells - flip_flops
+            wires = int(total_cells * 1.5)  # Typical wire-to-cell ratio
+            
+            metrics = {
+                'total_cells': total_cells,
+                'flip_flops': flip_flops,
+                'logic_cells': logic_cells,
+                'wires': wires,
+                'public_wires': 10,
+                'memories': 0,
+                'processes': 1
+            }
+            
+            return total_cells, f"Estimated synthesis (Yosys not available)\nPAR={par}, BUFFER_DEPTH={buffer_depth}", metrics
+        except Exception as e:
+            print(f"ERROR: Could not estimate metrics: {e}")
+            return None, "", {'total_cells': None, 'flip_flops': 0, 'logic_cells': None, 'wires': None}
+    
     # Enhanced synthesis with ABC for timing and area estimation
     cmd = f'yosys -p "read_verilog {verilog_file}; synth; stat"'
     try:
@@ -10,6 +83,9 @@ def synthesize(verilog_file, debug=False):
     except subprocess.CalledProcessError as e:
         result = e.output.decode()
         print(f"Warning: Yosys returned error code {e.returncode}")
+        if "not recognized" in result or "not found" in result:
+            print("ERROR: Yosys command failed - check installation")
+            return None, result, {'total_cells': None, 'flip_flops': 0, 'logic_cells': None, 'wires': None}
     
     # Debug: save raw output to file
     if debug or os.environ.get('YOSYS_DEBUG'):
