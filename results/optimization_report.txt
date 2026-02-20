@@ -1,0 +1,42 @@
+
+======================================================================
+MICROARCHITECTURE OPTIMIZATION REPORT
+======================================================================
+
+Generated: 2026-02-20 11:25:57
+
+OPTIMIZATION SUMMARY
+======================================================================
+
+Best Design Parameters:
+  PAR (Parallelism):        1
+  Buffer Depth:             256
+
+Best Hardware Metrics:
+  Total Cells:              321
+  Flip-Flops:               146
+  Logic Cells:              175
+  Wires:                    226
+
+Performance:
+  Throughput:               1 ops/cycle
+  Area Efficiency:          321.00 cells/op
+
+Optimization Score:
+  Objective (AEP):          10481.50
+  Improvement:              68.0% better than worst
+  Total Iterations:         5
+
+======================================================================
+ITERATION HISTORY
+======================================================================
+
+Iter   PAR   DEPTH   Cells   FFs    Logic   Objective 
+----------------------------------------------------------------------
+1      1     256     321     146    175     10481.50  
+2      8     2048    3590    600    2990    32747.71  
+3      4     1024    1733    342    1391    13502.96  
+4      4     256     1723    338    1385    13425.04  
+5      4     256     1723    338    1385    13425.04  
+
+======================================================================

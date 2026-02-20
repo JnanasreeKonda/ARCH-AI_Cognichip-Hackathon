@@ -1,11 +1,20 @@
 from llm.llm_agent import propose_design
 from tools.run_yosys import synthesize
 from tools.simulate import simulate
+from tools.results_reporter import generate_all_reports
 import math
 import os
 
 # Disable simulations (optional - synthesis works perfectly without them)
 os.environ.setdefault('RUN_SIMULATION', 'false')
+
+# =============================================================================
+# DESIGN CONSTRAINTS (Real-world optimization requirements)
+# =============================================================================
+MAX_AREA_CELLS = 1500      # Maximum total cells allowed
+MIN_THROUGHPUT = 2          # Minimum ops/cycle required
+MAX_FLIP_FLOPS = 400        # Maximum flip-flops allowed
+CONSTRAINT_PENALTY = 10000  # Penalty for violating constraints
 
 # =============================================================================
 # OPTIMIZATION OBJECTIVE FUNCTION
@@ -21,7 +30,7 @@ os.environ.setdefault('RUN_SIMULATION', 'false')
 
 def calculate_objective(params, metrics):
     """
-    Calculate objective function for design optimization.
+    Calculate objective function for design optimization with constraints.
     
     Lower score = better design
     
@@ -29,6 +38,11 @@ def calculate_objective(params, metrics):
     - Area cost: Total cells (want to minimize)
     - Performance: Throughput = PAR operations per cycle (want to maximize)
     - Efficiency: Area per unit throughput
+    
+    Constraints (with penalties):
+    - Maximum area (total cells)
+    - Minimum throughput
+    - Maximum flip-flops
     """
     par = params["PAR"]
     buffer_depth = params.get("BUFFER_DEPTH", 1024)
@@ -47,14 +61,32 @@ def calculate_objective(params, metrics):
     # Area-efficiency metric: cells per unit of throughput
     area_efficiency = total_cells / throughput
     
-    # Composite objective: Balance area and efficiency
-    # Weight factors can be tuned
+    # Base objective: Balance area and efficiency
     area_weight = 1.0
     efficiency_weight = 0.5
-    
     objective = (area_weight * total_cells) + (efficiency_weight * area_efficiency)
     
-    return objective
+    # Apply constraint penalties
+    penalty = 0
+    constraints_violated = []
+    
+    if total_cells > MAX_AREA_CELLS:
+        penalty += CONSTRAINT_PENALTY * (1 + (total_cells - MAX_AREA_CELLS) / MAX_AREA_CELLS)
+        constraints_violated.append(f"Area={total_cells} > {MAX_AREA_CELLS}")
+    
+    if par < MIN_THROUGHPUT:
+        penalty += CONSTRAINT_PENALTY
+        constraints_violated.append(f"Throughput={par} < {MIN_THROUGHPUT}")
+    
+    if flip_flops > MAX_FLIP_FLOPS:
+        penalty += CONSTRAINT_PENALTY * 0.5  # Softer penalty for FFs
+        constraints_violated.append(f"FFs={flip_flops} > {MAX_FLIP_FLOPS}")
+    
+    # Store constraint violations in metrics for reporting
+    metrics['constraints_violated'] = constraints_violated
+    metrics['constraint_penalty'] = penalty
+    
+    return objective + penalty
 
 # =============================================================================
 # DESIGN SPACE EXPLORATION
@@ -75,6 +107,10 @@ print("="*70)
 print(f"\n📋 Objective: Minimize Area-Efficiency Product")
 print(f"🔍 Search Space: PAR ∈ {{1,2,4,8,16,32}}, BUFFER_DEPTH ∈ {{256,512,1024,2048}}")
 print(f"🔄 Iterations: {ITERATIONS}")
+print(f"\n⚖️  Design Constraints:")
+print(f"   • Max Area:       {MAX_AREA_CELLS} cells")
+print(f"   • Min Throughput: {MIN_THROUGHPUT} ops/cycle")
+print(f"   • Max Flip-Flops: {MAX_FLIP_FLOPS}")
 print("\n" + "="*70)
 
 for i in range(ITERATIONS):
@@ -193,6 +229,12 @@ endmodule
     print(f"  📈 Optimization:")
     print(f"     Objective (AEP):    {objective:>6.1f}")
     print(f"     Best So Far:        {best_objective:>6.1f}")
+    
+    # Display constraint violations if any
+    if metrics.get('constraints_violated'):
+        print(f"  ⚠️  Constraint Violations:")
+        for violation in metrics['constraints_violated']:
+            print(f"     • {violation}")
 
 # =============================================================================
 # FINAL SUMMARY
@@ -219,5 +261,22 @@ if best_design:
     worst_obj = worst[1].get('objective', 0)
     improvement = ((worst_obj - best_objective) / worst_obj * 100) if worst_obj > 0 else 0
     print(f"\n📈 Improvement: {improvement:.1f}% better than worst design")
+    
+    # Check if best design meets all constraints
+    if best_metrics.get('constraints_violated'):
+        print(f"\n⚠️  WARNING: Best design violates constraints:")
+        for violation in best_metrics['constraints_violated']:
+            print(f"   • {violation}")
+    else:
+        print(f"\n✅ Best design meets all constraints!")
 
 print("\n" + "="*70)
+
+# =============================================================================
+# GENERATE REPORTS AND VISUALIZATIONS
+# =============================================================================
+try:
+    generate_all_reports(history, best_design)
+except Exception as e:
+    print(f"\n⚠️  Report generation failed: {e}")
+    print("   Results are still available in console output above")
