@@ -140,8 +140,11 @@ def calculate_objective(params, metrics):
     flip_flops = metrics.get('flip_flops', 0)
     logic_cells = metrics.get('logic_cells', 0)
     
-    if total_cells is None or total_cells == 0:
-        return float('inf')
+    # Guard against missing or zero area from synthesis
+    if total_cells is None or total_cells <= 0:
+        # Treat as a very large, but finite, area so
+        # we can still pick a "best" design if needed.
+        total_cells = 1e6
     
     # Performance metric: Effective throughput
     # Higher PAR = more parallel operations = better throughput
@@ -383,6 +386,15 @@ endmodule
 safe_print("\n\n" + "="*70)
 safe_print(" [BEST] OPTIMIZATION COMPLETE")
 safe_print("="*70)
+
+if not best_design and history:
+    # Fallback: pick design with smallest total_cells (or first if missing)
+    fallback_params, fallback_metrics = min(
+        history,
+        key=lambda x: (x[1].get('total_cells') if x[1].get('total_cells') not in (None, 0) else float('inf'))
+    )
+    best_design = (fallback_params, fallback_metrics)
+    best_objective = fallback_metrics.get('objective', best_objective)
 
 if best_design:
     best_params, best_metrics = best_design

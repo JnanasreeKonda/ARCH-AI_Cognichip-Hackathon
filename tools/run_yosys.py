@@ -160,39 +160,41 @@ def synthesize(verilog_file, debug=False):
     }
 
     lines = result.splitlines()
-    in_stat_section = False
     
-    for i, line in enumerate(lines):
+    for line in lines:
         stripped = line.strip()
         
-        # Detect statistics section
-        if 'Number of' in stripped or 'Chip area' in stripped:
-            in_stat_section = True
+        # Use explicit "Number of ..." stats lines to avoid
+        # accidentally matching "unused cells" / "unused wires" messages.
+        if "Number of cells:" in stripped:
+            match = re.search(r"Number of cells:\s*(\d+)", stripped)
+            if match:
+                metrics['total_cells'] = int(match.group(1))
+                continue
         
-        # Total cells: "363 cells" or "Number of cells: 363"
-        match = re.search(r"(\d+)\s+cells", stripped)
-        if match:
-            metrics['total_cells'] = int(match.group(1))
+        if "Number of wires:" in stripped:
+            match = re.search(r"Number of wires:\s*(\d+)", stripped)
+            if match:
+                metrics['wires'] = int(match.group(1))
+                continue
         
-        # Wires: "500 wires"
-        match = re.search(r"(\d+)\s+wires", stripped)
-        if match:
-            metrics['wires'] = int(match.group(1))
+        if "Number of public wires:" in stripped:
+            match = re.search(r"Number of public wires:\s*(\d+)", stripped)
+            if match:
+                metrics['public_wires'] = int(match.group(1))
+                continue
         
-        # Public wires
-        match = re.search(r"(\d+)\s+public wires", stripped)
-        if match:
-            metrics['public_wires'] = int(match.group(1))
+        if "Number of memories:" in stripped:
+            match = re.search(r"Number of memories:\s*(\d+)", stripped)
+            if match:
+                metrics['memories'] = int(match.group(1))
+                continue
         
-        # Memories
-        match = re.search(r"(\d+)\s+memories", stripped)
-        if match:
-            metrics['memories'] = int(match.group(1))
-        
-        # Processes
-        match = re.search(r"(\d+)\s+processes", stripped)
-        if match:
-            metrics['processes'] = int(match.group(1))
+        if "Number of processes:" in stripped:
+            match = re.search(r"Number of processes:\s*(\d+)", stripped)
+            if match:
+                metrics['processes'] = int(match.group(1))
+                continue
         
         # Count flip-flops (look for DFF cells after synthesis)
         # Patterns: $_DFF_P_, $_DFFE_PP_, $_SDFF_PP0_, $_SDFFE_PP0P_, etc.

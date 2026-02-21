@@ -183,21 +183,20 @@ def simulate_icarus(rtl_file: str, tb_file: str) -> Tuple[bool, Dict, str]:
     
     # Try to find iverilog in common locations
     iverilog_paths = [
-        "iverilog",  # In PATH
         "/opt/homebrew/bin/iverilog",  # Homebrew on Apple Silicon
         "/usr/local/bin/iverilog",  # Homebrew on Intel Mac
-        "/usr/bin/iverilog"  # System install
+        "/usr/bin/iverilog"  # Common Linux install
     ]
-    
-    iverilog_cmd = None
-    for path in iverilog_paths:
-        try:
-            result = subprocess.run(f"{path} -v", shell=True, capture_output=True, timeout=2)
-            if result.returncode == 0:
+
+    # Prefer PATH resolution first
+    iverilog_cmd: Optional[str] = shutil.which("iverilog")
+
+    # Fallback to well-known paths if not in PATH
+    if not iverilog_cmd:
+        for path in iverilog_paths:
+            if os.path.exists(path) and os.access(path, os.X_OK):
                 iverilog_cmd = path
                 break
-        except:
-            continue
     
     if not iverilog_cmd:
         return False, {}, "iverilog not found. Install with: brew install icarus-verilog"
@@ -302,20 +301,19 @@ def simulate(rtl_file: str, params: Dict, simulator: str = 'auto') -> Tuple[bool
     
     # Auto-detect simulator
     if simulator == 'auto':
-        # Check for Icarus Verilog in common locations
-        iverilog_found = False
-        for path in ["iverilog", "/opt/homebrew/bin/iverilog", "/usr/local/bin/iverilog", "/usr/bin/iverilog"]:
-            try:
-                result = subprocess.run(f"{path} -v", shell=True, capture_output=True, timeout=2)
-                if result.returncode == 0:
+        # Prefer Icarus Verilog if available
+        iverilog_cmd = shutil.which("iverilog")
+        if iverilog_cmd:
+            simulator = 'icarus'
+        else:
+            # Fallback to common installation paths
+            for path in ["/opt/homebrew/bin/iverilog", "/usr/local/bin/iverilog", "/usr/bin/iverilog"]:
+                if os.path.exists(path) and os.access(path, os.X_OK):
                     simulator = 'icarus'
-                    iverilog_found = True
                     break
-            except:
-                continue
-        
-        if not iverilog_found:
-            return False, {}, "No simulator found. Install iverilog: brew install icarus-verilog"
+
+        if simulator != 'icarus':
+            return False, {}, "No simulator found. Install iverilog (Icarus Verilog) and ensure it is in PATH."
     
     print(f"  🔬 Simulating with {simulator}...")
     
