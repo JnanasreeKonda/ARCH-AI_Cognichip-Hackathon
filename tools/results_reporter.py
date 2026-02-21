@@ -304,6 +304,13 @@ Optimization Score:
   Improvement:              {improvement:.1f}% better than worst
   Total Iterations:         {len(history)}
 
+Verification & Simulation:
+  Functional Simulation:    {"PASSED" if best_metrics.get('sim_passed') else "FAILED or NOT RUN"}
+  Sim Cycles (best design): {best_metrics.get('total_cycles', 'N/A')}
+  Sim Throughput:           {best_metrics.get('throughput', 'N/A')} inputs/cycle
+  Waveform File:            results/waveform.vcd
+  Simulation Log:           results/simulation.log
+
 {'='*70}
 ITERATION HISTORY
 {'='*70}

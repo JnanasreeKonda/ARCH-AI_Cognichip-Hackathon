@@ -5,6 +5,7 @@ Functional simulation and verification using Verilator or Icarus Verilog.
 import subprocess
 import os
 import re
+import shutil
 from typing import Dict, Tuple, Optional
 
 
@@ -229,6 +230,23 @@ def simulate_icarus(rtl_file: str, tb_file: str) -> Tuple[bool, Dict, str]:
         )
         
         log = sim_result.stdout + sim_result.stderr
+
+        # Ensure results directory exists for logs and waveforms
+        os.makedirs("results", exist_ok=True)
+
+        # Persist full simulation log for verification evidence
+        try:
+            with open("results/simulation.log", "w") as f:
+                f.write(log)
+        except Exception:
+            pass
+
+        # Copy waveform dump into results for easier access
+        try:
+            if os.path.exists("waveform.vcd"):
+                shutil.copy("waveform.vcd", "results/waveform.vcd")
+        except Exception:
+            pass
         
         # Parse results
         metrics = parse_simulation_log(log)

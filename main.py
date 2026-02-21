@@ -53,8 +53,8 @@ def safe_print(text):
         text = text.replace('🤖', '[AI]')
         print(text)
 
-# Disable simulations (optional - synthesis works perfectly without them)
-os.environ.setdefault('RUN_SIMULATION', 'false')
+# Enable simulations by default - functional validation is required
+os.environ.setdefault('RUN_SIMULATION', 'true')
 
 # =============================================================================
 # UNIFIED AGENT CONFIGURATION CHECK  
@@ -172,6 +172,12 @@ def calculate_objective(params, metrics):
         constraints_violated.append(f"FFs={flip_flops} > {MAX_FLIP_FLOPS}")
     
     # Store constraint violations in metrics for reporting
+    # Require passing functional simulation when enabled
+    require_sim = os.environ.get('RUN_SIMULATION', 'true').lower() == 'true'
+    if require_sim and not metrics.get('sim_passed', False):
+        penalty += CONSTRAINT_PENALTY
+        constraints_violated.append("Functional simulation not passing or missing")
+
     metrics['constraints_violated'] = constraints_violated
     metrics['constraint_penalty'] = penalty
     
