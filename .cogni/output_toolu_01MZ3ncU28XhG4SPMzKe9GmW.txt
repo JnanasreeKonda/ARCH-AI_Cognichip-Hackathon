@@ -1,0 +1,16 @@
+=== Command: cd /Users/jnanasreekonda/PycharmProjects/ARCH-AI_Cognichip-Hackathon && ls -la "reinforcement learning/" 2>&1 | head -10 (2026-02-21T02:15:43.810Z) ===
+Exit Code: 0
+Output:
+total 200
+drwxr-xr-x@ 11 jnanasreekonda  staff    352 Feb 20 21:13 .
+drwxr-xr-x@ 26 jnanasreekonda  staff    832 Feb 20 20:55 ..
+-rw-r--r--@  1 jnanasreekonda  staff  11265 Feb 20 20:23 DQN_IMPLEMENTATION_SUMMARY.md
+-rw-r--r--@  1 jnanasreekonda  staff  10081 Feb 20 20:23 README_DQN.md
+-rw-r--r--@  1 jnanasreekonda  staff  11202 Feb 20 20:23 RL_RESULTS.md
+-rw-r--r--@  1 jnanasreekonda  staff   8600 Feb 20 20:23 compare_agents.py
+-rw-r--r--@  1 jnanasreekonda  staff  19271 Feb 20 20:23 main_dqn.py
+-rw-r--r--@  1 jnanasreekonda  staff    510 Feb 20 20:23 requirements_rl.txt
+drwxr-xr-x@  4 jnanasreekonda  staff    128 Feb 20 20:23 rl
+
+=== End Output ===
+

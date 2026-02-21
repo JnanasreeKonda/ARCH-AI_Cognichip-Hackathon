@@ -5,7 +5,7 @@ Main optimization loop that integrates LLM agent, synthesis, simulation,
 and reporting to find optimal microarchitecture designs.
 """
 
-from llm.llm_agent import propose_design
+from llm.unified_agent import propose_design
 from tools.run_yosys import synthesize
 from tools.simulate import simulate
 from tools.results_reporter import generate_all_reports
@@ -55,6 +55,47 @@ def safe_print(text):
 
 # Disable simulations (optional - synthesis works perfectly without them)
 os.environ.setdefault('RUN_SIMULATION', 'false')
+
+# =============================================================================
+# UNIFIED AGENT CONFIGURATION CHECK  
+# =============================================================================
+safe_print("\n" + "="*70)
+safe_print(" [AI] UNIFIED AGENT SYSTEM")
+safe_print("="*70)
+safe_print("\nAgent Priority:")
+safe_print("  1. DQN (Reinforcement Learning) - if trained model exists")
+safe_print("  2. LLM (Gemini/GPT-4/Claude) - if API key available")
+safe_print("  3. Heuristic (Rule-based) - fallback")
+safe_print("\nChecking available agents...")
+
+# Check DQN
+dqn_available = False
+if os.path.exists('reinforcement_learning/checkpoints/dqn_final.pt'):
+    safe_print("  [OK] DQN checkpoint found: reinforcement_learning/checkpoints/dqn_final.pt")
+    dqn_available = True
+elif os.path.exists('reinforcement_learning/checkpoints/dqn_best.pt'):
+    safe_print("  [OK] DQN checkpoint found: reinforcement_learning/checkpoints/dqn_best.pt")
+    dqn_available = True
+else:
+    safe_print("  [ ] No DQN checkpoint (train with: python3 run_dqn_quick.py)")
+
+# Check LLM APIs
+llm_available = []
+if os.environ.get('GEMINI_API_KEY'):
+    llm_available.append('Gemini')
+if os.environ.get('OPENAI_API_KEY'):
+    llm_available.append('GPT-4')
+if os.environ.get('ANTHROPIC_API_KEY'):
+    llm_available.append('Claude')
+
+if llm_available:
+    safe_print(f"  [OK] LLM API keys detected: {', '.join(llm_available)}")
+else:
+    safe_print("  [ ] No LLM API keys")
+
+# Summary
+safe_print("\nAgent will be auto-selected (priority: DQN > LLM > Heuristic)")
+safe_print("="*70)
 
 # =============================================================================
 # DESIGN CONSTRAINTS (Real-world optimization requirements)
@@ -384,6 +425,61 @@ if best_design:
         avg_iter = sum(performance_metrics['iteration_times']) / len(performance_metrics['iteration_times'])
         safe_print(f"Average Iteration Time: {avg_iter:.2f} seconds")
     safe_print("="*70)
+
+    # Generate Verilog for best design
+    best_par = best_params["PAR"]
+    best_buffer_depth = best_params.get("BUFFER_DEPTH", 1024)
+    best_addr_width = int(math.ceil(math.log2(best_buffer_depth)))
+
+    best_rtl = f"""
+module reduce_sum #(
+    parameter PAR = {best_par},
+    parameter BUFFER_DEPTH = {best_buffer_depth}
+) (
+    input clk,
+    input rst,
+    input [31:0] in_data,
+    input in_valid,
+    output reg [31:0] out_data,
+    output reg out_valid
+);
+
+reg [31:0] acc [0:PAR-1];
+reg [{best_addr_width-1}:0] count;
+integer i;
+
+reg [31:0] final_sum;
+
+always @(posedge clk) begin
+    if (rst) begin
+        for (i = 0; i < PAR; i = i + 1)
+            acc[i] <= 0;
+        count <= 0;
+        out_valid <= 0;
+    end
+    else if (in_valid) begin
+        for (i = 0; i < PAR; i = i + 1)
+            acc[i] <= acc[i] + in_data + i;
+
+        count <= count + 1;
+
+        if (count == BUFFER_DEPTH - 1) begin
+            final_sum = 0;
+            for (i = 0; i < PAR; i = i + 1)
+                final_sum = final_sum + acc[i];
+
+            out_data <= final_sum;
+            out_valid <= 1;
+            count <= 0;
+        end
+    end
+end
+
+endmodule
+"""
+    with open("rtl/best_design.v", "w") as f:
+        f.write(best_rtl)
+    safe_print(f"\n[SUCCESS] Best design Verilog code saved to rtl/best_design.v")
 
 # =============================================================================
 # GENERATE REPORTS AND VISUALIZATIONS
