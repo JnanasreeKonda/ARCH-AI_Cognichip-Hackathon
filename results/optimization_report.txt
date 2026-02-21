@@ -3,29 +3,29 @@
 MICROARCHITECTURE OPTIMIZATION REPORT
 ======================================================================
 
-Generated: 2026-02-20 11:25:57
+Generated: 2026-02-20 15:54:51
 
 OPTIMIZATION SUMMARY
 ======================================================================
 
 Best Design Parameters:
-  PAR (Parallelism):        1
+  PAR (Parallelism):        2
   Buffer Depth:             256
 
 Best Hardware Metrics:
-  Total Cells:              321
-  Flip-Flops:               146
-  Logic Cells:              175
-  Wires:                    226
+  Total Cells:              794
+  Flip-Flops:               210
+  Logic Cells:              584
+  Wires:                    607
 
 Performance:
-  Throughput:               1 ops/cycle
-  Area Efficiency:          321.00 cells/op
+  Throughput:               2 ops/cycle
+  Area Efficiency:          397.00 cells/op
 
 Optimization Score:
-  Objective (AEP):          10481.50
-  Improvement:              68.0% better than worst
-  Total Iterations:         5
+  Objective (AEP):          992.50
+  Improvement:              99.2% better than worst
+  Total Iterations:         20
 
 ======================================================================
 ITERATION HISTORY
@@ -33,10 +33,25 @@ ITERATION HISTORY
 
 Iter   PAR   DEPTH   Cells   FFs    Logic   Objective 
 ----------------------------------------------------------------------
-1      1     256     321     146    175     10481.50  
-2      8     2048    3590    600    2990    32747.71  
-3      4     1024    1733    342    1391    13502.96  
-4      4     256     1723    338    1385    13425.04  
-5      4     256     1723    338    1385    13425.04  
+1      1     256     322     146    176     10483.00  
+2      2     512     797     212    585     996.25    
+3      4     1024    1777    342    1435    13845.79  
+4      8     2048    3707    600    3107    33652.02  
+5      2     512     797     212    585     996.25    
+6      2     512     797     212    585     996.25    
+7      2     512     797     212    585     996.25    
+8      16    256     7463    1106   6357    62449.55  
+9      2     512     797     212    585     996.25    
+10     32    2048    15086   2136   12950   120895.05 
+11     1     512     325     148    177     10487.50  
+12     1     256     322     146    176     10483.00  
+13     1     256     322     146    176     10483.00  
+14     4     1024    1777    342    1435    13845.79  
+15     1     256     322     146    176     10483.00  
+16     4     512     1772    340    1432    13806.83  
+17     8     1024    3701    598    3103    33605.65  
+18     2     256     794     210    584     992.50    
+19     2     256     794     210    584     992.50    
+20     2     512     797     212    585     996.25    
 
 ======================================================================

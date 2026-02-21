@@ -1,9 +1,57 @@
+"""
+ARCH-AI: AI-Powered Hardware Optimization
+
+Main optimization loop that integrates LLM agent, synthesis, simulation,
+and reporting to find optimal microarchitecture designs.
+"""
+
 from llm.llm_agent import propose_design
 from tools.run_yosys import synthesize
 from tools.simulate import simulate
 from tools.results_reporter import generate_all_reports
 import math
 import os
+import sys
+
+# Progress indicator
+try:
+    from tqdm import tqdm
+    TQDM_AVAILABLE = True
+except ImportError:
+    TQDM_AVAILABLE = False
+    def tqdm(iterable, **kwargs):
+        return iterable
+
+# Fix Windows console encoding for emojis
+if sys.platform == 'win32':
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+    except:
+        pass
+
+# Safe print function for emojis
+def safe_print(text):
+    """Print text, handling encoding errors gracefully"""
+    try:
+        print(text)
+    except UnicodeEncodeError:
+        # Replace common emojis with ASCII equivalents
+        text = text.replace('📋', '[OBJ]')
+        text = text.replace('🔍', '[SEARCH]')
+        text = text.replace('🔄', '[ITER]')
+        text = text.replace('⚖️', '[CONST]')
+        text = text.replace('📊', '[METRICS]')
+        text = text.replace('🔬', '[SIM]')
+        text = text.replace('🎯', '[PERF]')
+        text = text.replace('📈', '[OPT]')
+        text = text.replace('⚠️', '[WARN]')
+        text = text.replace('✓', '[OK]')
+        text = text.replace('✗', '[FAIL]')
+        text = text.replace('🏆', '[BEST]')
+        text = text.replace('✨', '[SUCCESS]')
+        text = text.replace('💡', '[IDEA]')
+        text = text.replace('🤖', '[AI]')
+        print(text)
 
 # Disable simulations (optional - synthesis works perfectly without them)
 os.environ.setdefault('RUN_SIMULATION', 'false')
@@ -96,26 +144,41 @@ def calculate_objective(params, metrics):
 #   - BUFFER_DEPTH: 256, 512, 1024, 2048 (accumulation depth)
 # =============================================================================
 
-ITERATIONS = 5
+ITERATIONS = 20
 history = []
 best_design = None
 best_objective = float('inf')
 
-print("\n" + "="*70)
-print(" MICROARCHITECTURE OPTIMIZATION")
-print("="*70)
-print(f"\n📋 Objective: Minimize Area-Efficiency Product")
-print(f"🔍 Search Space: PAR ∈ {{1,2,4,8,16,32}}, BUFFER_DEPTH ∈ {{256,512,1024,2048}}")
-print(f"🔄 Iterations: {ITERATIONS}")
-print(f"\n⚖️  Design Constraints:")
-print(f"   • Max Area:       {MAX_AREA_CELLS} cells")
-print(f"   • Min Throughput: {MIN_THROUGHPUT} ops/cycle")
-print(f"   • Max Flip-Flops: {MAX_FLIP_FLOPS}")
-print("\n" + "="*70)
+safe_print("\n" + "="*70)
+safe_print(" MICROARCHITECTURE OPTIMIZATION")
+safe_print("="*70)
+safe_print(f"\n[OBJ] Objective: Minimize Area-Efficiency Product")
+safe_print(f"[SEARCH] Search Space: PAR in {{1,2,4,8,16,32}}, BUFFER_DEPTH in {{256,512,1024,2048}}")
+safe_print(f"[ITER] Iterations: {ITERATIONS}")
+safe_print(f"\n[CONST] Design Constraints:")
+safe_print(f"   - Max Area:       {MAX_AREA_CELLS} cells")
+safe_print(f"   - Min Throughput: {MIN_THROUGHPUT} ops/cycle")
+safe_print(f"   - Max Flip-Flops: {MAX_FLIP_FLOPS}")
+safe_print("\n" + "="*70)
 
-for i in range(ITERATIONS):
+# Performance tracking
+import time
+performance_metrics = {
+    'start_time': time.time(),
+    'iteration_times': [],
+    'llm_times': [],
+    'synthesis_times': []
+}
+
+# Progress bar for iterations
+iter_range = tqdm(range(ITERATIONS), desc="Optimizing", unit="iteration") if TQDM_AVAILABLE else range(ITERATIONS)
+
+for i in iter_range:
+    iter_start = time.time()
     # Agent proposes next design point
+    llm_start = time.time()
     params = propose_design(history)
+    performance_metrics['llm_times'].append(time.time() - llm_start)
     par = params["PAR"]
     buffer_depth = params.get("BUFFER_DEPTH", 1024)
     
@@ -175,12 +238,36 @@ endmodule
 
     # Synthesize and collect metrics
     debug_mode = (i == 0)
+    synth_start = time.time()
     area, log, metrics = synthesize("rtl/tmp.v", debug=debug_mode)
+    performance_metrics['synthesis_times'].append(time.time() - synth_start)
+
+    # Handle synthesis failure
+    if area is None or metrics.get('total_cells') is None:
+        safe_print(f"  [ERROR] Synthesis failed for PAR={par}, BUFFER_DEPTH={buffer_depth}")
+        safe_print(f"  Skipping this design...")
+        # Set default values to skip this design
+        metrics["area"] = float('inf')
+        metrics["throughput"] = par
+        metrics["area_per_throughput"] = float('inf')
+        metrics["total_cells"] = None
+        objective = float('inf')
+        metrics["objective"] = objective
+        history.append((params, metrics))
+        continue
 
     # Add derived metrics
     metrics["area"] = area
     metrics["throughput"] = par
     metrics["area_per_throughput"] = area / par if par > 0 else float('inf')
+    
+    # Add timing estimates
+    try:
+        from tools.timing_analysis import estimate_timing
+        timing = estimate_timing(metrics, params)
+        metrics.update(timing)
+    except:
+        pass  # Timing estimation is optional
     
     # Run functional simulation (if simulator available)
     run_simulation = os.environ.get('RUN_SIMULATION', 'true').lower() == 'true'
@@ -188,9 +275,9 @@ endmodule
         sim_success, sim_metrics, sim_log = simulate("rtl/tmp.v", params)
         metrics.update(sim_metrics)
         if not sim_success:
-            print(f"  ⚠️  Simulation: FAILED")
+            safe_print(f"  [WARN] Simulation: FAILED")
             if sim_log and len(sim_log) > 0:
-                print(f"     Error: {sim_log[:200]}")  # Show first 200 chars of error
+                safe_print(f"     Error: {sim_log[:200]}")  # Show first 200 chars of error
     
     # Calculate objective function
     objective = calculate_objective(params, metrics)
@@ -204,73 +291,99 @@ endmodule
     history.append((params, metrics))
 
     # Display iteration results
-    print(f"\n{'='*70}")
-    print(f"Iteration {i+1}/{ITERATIONS}: PAR={par}, BUFFER_DEPTH={buffer_depth}")
-    print(f"{'='*70}")
-    print(f"  📊 Hardware Metrics:")
-    print(f"     Total Cells:        {metrics.get('total_cells', 'N/A'):>6}")
-    print(f"     Flip-Flops:         {metrics.get('flip_flops', 'N/A'):>6}")
-    print(f"     Logic Cells:        {metrics.get('logic_cells', 'N/A'):>6}")
-    print(f"     Wires:              {metrics.get('wires', 'N/A'):>6}")
+    safe_print(f"\n{'='*70}")
+    safe_print(f"Iteration {i+1}/{ITERATIONS}: PAR={par}, BUFFER_DEPTH={buffer_depth}")
+    safe_print(f"{'='*70}")
+    safe_print(f"  [METRICS] Hardware Metrics:")
+    safe_print(f"     Total Cells:        {metrics.get('total_cells', 'N/A'):>6}")
+    safe_print(f"     Flip-Flops:         {metrics.get('flip_flops', 'N/A'):>6}")
+    safe_print(f"     Logic Cells:        {metrics.get('logic_cells', 'N/A'):>6}")
+    safe_print(f"     Wires:              {metrics.get('wires', 'N/A'):>6}")
     
     # Display simulation results if available
     if run_simulation and 'sim_passed' in metrics:
-        print(f"  🔬 Simulation Results:")
-        status = "✓ PASSED" if metrics.get('sim_passed') else "✗ FAILED"
-        print(f"     Status:             {status}")
+        safe_print(f"  [SIM] Simulation Results:")
+        status = "[OK] PASSED" if metrics.get('sim_passed') else "[FAIL] FAILED"
+        safe_print(f"     Status:             {status}")
         if metrics.get('total_cycles'):
-            print(f"     Cycles:             {metrics.get('total_cycles'):>6}")
+            safe_print(f"     Cycles:             {metrics.get('total_cycles'):>6}")
         if metrics.get('throughput') and isinstance(metrics.get('throughput'), float):
-            print(f"     Sim Throughput:     {metrics.get('throughput'):>6.3f} inputs/cycle")
+            safe_print(f"     Sim Throughput:     {metrics.get('throughput'):>6.3f} inputs/cycle")
     
-    print(f"  🎯 Performance Metrics:")
-    print(f"     Throughput:         {par:>6} ops/cycle")
-    print(f"     Area/Throughput:    {metrics.get('area_per_throughput', 'N/A'):>6.1f} cells/op")
-    print(f"  📈 Optimization:")
-    print(f"     Objective (AEP):    {objective:>6.1f}")
-    print(f"     Best So Far:        {best_objective:>6.1f}")
+    safe_print(f"  [PERF] Performance Metrics:")
+    safe_print(f"     Throughput:         {par:>6} ops/cycle")
+    safe_print(f"     Area/Throughput:    {metrics.get('area_per_throughput', 'N/A'):>6.1f} cells/op")
+    safe_print(f"  [OPT] Optimization:")
+    safe_print(f"     Objective (AEP):    {objective:>6.1f}")
+    safe_print(f"     Best So Far:        {best_objective:>6.1f}")
     
     # Display constraint violations if any
     if metrics.get('constraints_violated'):
-        print(f"  ⚠️  Constraint Violations:")
+        safe_print(f"  [WARN] Constraint Violations:")
         for violation in metrics['constraints_violated']:
-            print(f"     • {violation}")
+            safe_print(f"     - {violation}")
+    
+    # Generate live dashboard after each iteration
+    try:
+        from tools.live_dashboard import generate_live_dashboard
+        generate_live_dashboard(history, i+1, best_design if best_design else None)
+    except Exception as e:
+        pass  # Live dashboard is optional
 
 # =============================================================================
 # FINAL SUMMARY
 # =============================================================================
-print("\n\n" + "="*70)
-print(" 🏆 OPTIMIZATION COMPLETE")
-print("="*70)
+safe_print("\n\n" + "="*70)
+safe_print(" [BEST] OPTIMIZATION COMPLETE")
+safe_print("="*70)
 
 if best_design:
     best_params, best_metrics = best_design
-    print(f"\n✨ Best Design Found:")
-    print(f"   PAR:                  {best_params['PAR']}")
-    print(f"   BUFFER_DEPTH:         {best_params.get('BUFFER_DEPTH', 1024)}")
-    print(f"\n📊 Best Metrics:")
-    print(f"   Total Cells:          {best_metrics.get('total_cells', 'N/A')}")
-    print(f"   Flip-Flops:           {best_metrics.get('flip_flops', 'N/A')}")
-    print(f"   Logic Cells:          {best_metrics.get('logic_cells', 'N/A')}")
-    print(f"   Throughput:           {best_metrics.get('throughput', 'N/A')} ops/cycle")
-    print(f"   Area Efficiency:      {best_metrics.get('area_per_throughput', 'N/A'):.1f} cells/op")
-    print(f"   Objective Score:      {best_objective:.1f}")
+    safe_print(f"\n[SUCCESS] Best Design Found:")
+    safe_print(f"   PAR:                  {best_params['PAR']}")
+    safe_print(f"   BUFFER_DEPTH:         {best_params.get('BUFFER_DEPTH', 1024)}")
+    safe_print(f"\n[METRICS] Best Metrics:")
+    safe_print(f"   Total Cells:          {best_metrics.get('total_cells', 'N/A')}")
+    safe_print(f"   Flip-Flops:           {best_metrics.get('flip_flops', 'N/A')}")
+    safe_print(f"   Logic Cells:          {best_metrics.get('logic_cells', 'N/A')}")
+    safe_print(f"   Throughput:           {best_metrics.get('throughput', 'N/A')} ops/cycle")
+    safe_print(f"   Area Efficiency:      {best_metrics.get('area_per_throughput', 'N/A'):.1f} cells/op")
+    if best_metrics.get('max_frequency_mhz'):
+        safe_print(f"   Max Frequency:        {best_metrics.get('max_frequency_mhz', 'N/A'):.1f} MHz")
+        safe_print(f"   Critical Path:        {best_metrics.get('critical_path_delay_ns', 'N/A'):.2f} ns")
+    safe_print(f"   Objective Score:      {best_objective:.1f}")
     
     # Compare to worst design
     worst = max(history, key=lambda x: x[1].get('objective', 0))
     worst_obj = worst[1].get('objective', 0)
     improvement = ((worst_obj - best_objective) / worst_obj * 100) if worst_obj > 0 else 0
-    print(f"\n📈 Improvement: {improvement:.1f}% better than worst design")
+    safe_print(f"\n[OPT] Improvement: {improvement:.1f}% better than worst design")
     
     # Check if best design meets all constraints
     if best_metrics.get('constraints_violated'):
-        print(f"\n⚠️  WARNING: Best design violates constraints:")
+        safe_print(f"\n[WARN] WARNING: Best design violates constraints:")
         for violation in best_metrics['constraints_violated']:
-            print(f"   • {violation}")
+            safe_print(f"   - {violation}")
     else:
-        print(f"\n✅ Best design meets all constraints!")
+        safe_print(f"\n[OK] Best design meets all constraints!")
 
-print("\n" + "="*70)
+    # Performance metrics summary
+    performance_metrics['total_time'] = time.time() - performance_metrics['start_time']
+    
+    safe_print("\n" + "="*70)
+    safe_print(" PERFORMANCE METRICS")
+    safe_print("="*70)
+    safe_print(f"Total Time: {performance_metrics['total_time']:.2f} seconds")
+    if performance_metrics['llm_times']:
+        avg_llm = sum(performance_metrics['llm_times']) / len(performance_metrics['llm_times'])
+        safe_print(f"Average LLM Time: {avg_llm:.2f} seconds/iteration")
+    if performance_metrics['synthesis_times']:
+        avg_synth = sum(performance_metrics['synthesis_times']) / len(performance_metrics['synthesis_times'])
+        safe_print(f"Average Synthesis Time: {avg_synth:.2f} seconds/iteration")
+    if performance_metrics['iteration_times']:
+        avg_iter = sum(performance_metrics['iteration_times']) / len(performance_metrics['iteration_times'])
+        safe_print(f"Average Iteration Time: {avg_iter:.2f} seconds")
+    safe_print("="*70)
 
 # =============================================================================
 # GENERATE REPORTS AND VISUALIZATIONS
@@ -278,5 +391,5 @@ print("\n" + "="*70)
 try:
     generate_all_reports(history, best_design)
 except Exception as e:
-    print(f"\n⚠️  Report generation failed: {e}")
-    print("   Results are still available in console output above")
+    safe_print(f"\n[WARN] Report generation failed: {e}")
+    safe_print("   Results are still available in console output above")

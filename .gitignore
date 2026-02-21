@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+*.egg-info/
+dist/
+build/
+
+# Environment variables and secrets
+.env
+.env.local
+*.key
+*.secret
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+logs/*.log
+results/*.png
+results/*.gif
+results/*.csv
+results/*.json
+results/*.txt
+results/*.v
+waveform.vcd
+yosys_output.log
+test.out
+sim.out
+rtl/tmp.v
+tb/tb_*.v
+
+# Keep directory structure
+!logs/.gitkeep
+!results/.gitkeep
+
+# Yosys source code (large repository)
+yosys/
+
+# Diagnostic/test scripts output
+*.log

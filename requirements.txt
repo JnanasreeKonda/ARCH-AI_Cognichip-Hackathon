@@ -1,0 +1,19 @@
+# Core dependencies for ARCH-AI Cognichip Hackathon
+# Python 3.7+ required
+
+# LLM API clients (optional - at least one recommended)
+openai>=1.0.0          # For OpenAI GPT-4 support
+anthropic>=0.18.0      # For Anthropic Claude support
+google-genai>=0.2.0    # For Google Gemini support
+
+# Visualization (optional but recommended)
+matplotlib>=3.5.0      # For generating optimization plots
+seaborn>=0.12.0        # For better plot styling
+numpy>=1.23.0          # For numerical operations (already included via matplotlib)
+scipy>=1.9.0           # For advanced visualizations (3D surface, interpolation)
+pandas>=1.5.0          # For statistical analysis and data handling
+tqdm>=4.64.0           # For progress indicators
+Pillow>=9.0.0          # For animated GIF generation
+
+# Note: Standard library packages (no installation needed):
+# - subprocess, os, re, json, csv, datetime, typing, math, random, sys
