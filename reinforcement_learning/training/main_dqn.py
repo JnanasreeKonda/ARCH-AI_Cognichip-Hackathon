@@ -9,7 +9,7 @@ Usage:
     python main_dqn.py --mode evaluate --load checkpoints/best_agent.pt
 """
 
-from rl.training.dqn_agent import DQNAgent
+from reinforcement_learning.training.dqn_agent import DQNAgent
 from tools.run_yosys import synthesize
 from tools.simulate import simulate
 from tools.results_reporter import generate_all_reports
@@ -304,10 +304,10 @@ def run_training(episodes=50, iterations_per_episode=20, agent=None):
         
         # Save checkpoint every 10 episodes
         if (episode + 1) % 10 == 0:
-            agent.save(f'rl/checkpoints/dqn_episode_{episode+1}.pt')
+            agent.save(f'reinforcement_learning/checkpoints/dqn_episode_{episode+1}.pt')
     
     # Final save
-    agent.save('rl/checkpoints/dqn_final.pt')
+    agent.save('reinforcement_learning/checkpoints/dqn_final.pt')
     
     # Training complete summary
     print("\n\n" + "="*70)
@@ -557,7 +557,7 @@ endmodule
 def plot_training_curves(episode_rewards, episode_objectives, losses):
     """Plot training progress"""
     try:
-        os.makedirs('../../results/rl', exist_ok=True)
+        os.makedirs('../../results/reinforcement_learning', exist_ok=True)
         
         fig, axes = plt.subplots(1, 3, figsize=(15, 4))
         
@@ -586,8 +586,8 @@ def plot_training_curves(episode_rewards, episode_objectives, losses):
             axes[2].grid(True, alpha=0.3)
         
         plt.tight_layout()
-        plt.savefig('results/rl/training_curves.png', dpi=150)
-        print(f"\n📈 Training curves saved to results/rl/training_curves.png")
+        plt.savefig('results/reinforcement_learning/training_curves.png', dpi=150)
+        print(f"\n📈 Training curves saved to results/reinforcement_learning/training_curves.png")
         plt.close()
     except Exception as e:
         print(f"⚠️  Could not plot training curves: {e}")
@@ -602,15 +602,15 @@ def main():
     parser.add_argument('--iterations', type=int, default=20,
                         help='Iterations per episode (train) or total iterations (evaluate)')
     parser.add_argument('--load', type=str, default=None,
-                        help='Load checkpoint file (e.g., rl/checkpoints/dqn_final.pt)')
-    parser.add_argument('--save', type=str, default='rl/checkpoints/dqn_final.pt',
+                        help='Load checkpoint file (e.g., reinforcement_learning/checkpoints/dqn_final.pt)')
+    parser.add_argument('--save', type=str, default='reinforcement_learning/checkpoints/dqn_final.pt',
                         help='Save checkpoint file')
     
     args = parser.parse_args()
     
     # Create directories
     os.makedirs('../checkpoints', exist_ok=True)
-    os.makedirs('../../results/rl', exist_ok=True)
+    os.makedirs('../../results/reinforcement_learning', exist_ok=True)
     
     # Initialize agent
     agent = DQNAgent(

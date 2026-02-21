@@ -70,11 +70,11 @@ safe_print("\nChecking available agents...")
 
 # Check DQN
 dqn_available = False
-if os.path.exists('rl/checkpoints/dqn_final.pt'):
-    safe_print("  [OK] DQN checkpoint found: rl/checkpoints/dqn_final.pt")
+if os.path.exists('reinforcement_learning/checkpoints/dqn_final.pt'):
+    safe_print("  [OK] DQN checkpoint found: reinforcement_learning/checkpoints/dqn_final.pt")
     dqn_available = True
-elif os.path.exists('rl/checkpoints/dqn_best.pt'):
-    safe_print("  [OK] DQN checkpoint found: rl/checkpoints/dqn_best.pt")
+elif os.path.exists('reinforcement_learning/checkpoints/dqn_best.pt'):
+    safe_print("  [OK] DQN checkpoint found: reinforcement_learning/checkpoints/dqn_best.pt")
     dqn_available = True
 else:
     safe_print("  [ ] No DQN checkpoint (train with: python3 run_dqn_quick.py)")
@@ -185,7 +185,7 @@ def calculate_objective(params, metrics):
 #   - BUFFER_DEPTH: 256, 512, 1024, 2048 (accumulation depth)
 # =============================================================================
 
-ITERATIONS = 4#20
+ITERATIONS = 20
 history = []
 best_design = None
 best_objective = float('inf')

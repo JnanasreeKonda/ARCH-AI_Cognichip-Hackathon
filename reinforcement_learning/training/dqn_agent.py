@@ -350,7 +350,7 @@ class DQNAgent:
         """Decay exploration rate"""
         self.epsilon = max(self.epsilon_end, self.epsilon * self.epsilon_decay)
     
-    def save(self, filepath='rl/checkpoints/dqn_agent.pt'):
+    def save(self, filepath='reinforcement_learning/checkpoints/dqn_agent.pt'):
         """Save agent state"""
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
         torch.save({
@@ -364,7 +364,7 @@ class DQNAgent:
         }, filepath)
         print(f"✅ Agent saved to {filepath}")
     
-    def load(self, filepath='rl/checkpoints/dqn_agent.pt'):
+    def load(self, filepath='reinforcement_learning/checkpoints/dqn_agent.pt'):
         """Load agent state"""
         if not os.path.exists(filepath):
             print(f"⚠️  No checkpoint found at {filepath}")

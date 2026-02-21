@@ -8,10 +8,10 @@ Perfect for testing the DQN implementation without command-line arguments.
 import os
 import sys
 
-# Ensure rl module can be imported
+# Ensure reinforcement_learning module can be imported
 sys.path.insert(0, os.path.dirname(__file__))
 
-from rl.training.dqn_agent import DQNAgent
+from reinforcement_learning.training.dqn_agent import DQNAgent
 from main_dqn import run_training, run_evaluation
 
 def quick_train():
@@ -30,7 +30,7 @@ def quick_train():
     
     # Create directories
     os.makedirs('../checkpoints', exist_ok=True)
-    os.makedirs('../../results/rl', exist_ok=True)
+    os.makedirs('../../results/reinforcement_learning', exist_ok=True)
     
     # Initialize agent with good defaults
     agent = DQNAgent(
@@ -54,10 +54,10 @@ def quick_train():
     print("\n" + "="*70)
     print(" ✅ QUICK TRAINING COMPLETE!")
     print("="*70)
-    print(f"\n   Model saved to: rl/checkpoints/dqn_final.pt")
+    print(f"\n   Model saved to: reinforcement_learning/checkpoints/dqn_final.pt")
     print(f"   Results saved to: results/")
     print(f"\n   Next steps:")
-    print(f"   1. Check results/rl/training_curves.png for learning curves")
+    print(f"   1. Check results/reinforcement_learning/training_curves.png for learning curves")
     print(f"   2. Run evaluation: python run_dqn_quick.py --evaluate")
     print(f"   3. Train longer: python main_dqn.py --mode train --episodes 50")
     print("\n" + "="*70)

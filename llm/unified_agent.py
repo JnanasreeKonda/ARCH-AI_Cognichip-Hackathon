@@ -30,15 +30,15 @@ try:
     import sys
     # Check for DQN checkpoint
     possible_checkpoints = [
-        'rl/checkpoints/dqn_final.pt',
-        'rl/checkpoints/dqn_best.pt',
+        'reinforcement_learning/checkpoints/dqn_final.pt',
+        'reinforcement_learning/checkpoints/dqn_best.pt',
     ]
     for ckpt in possible_checkpoints:
         if os.path.exists(ckpt):
             DQN_CHECKPOINT = ckpt
             # Try to import DQN agent
             try:
-                from rl.training.dqn_agent import DQNAgent
+                from reinforcement_learning.training.dqn_agent import DQNAgent
                 DQN_AVAILABLE = True
                 break
             except ImportError as e:
@@ -49,7 +49,7 @@ try:
                 print(f"DEBUG: {DQN_ERROR}")
     
     if not DQN_CHECKPOINT:
-        DQN_ERROR = "No DQN checkpoint found in rl/checkpoints/"
+        DQN_ERROR = "No DQN checkpoint found in reinforcement_learning/checkpoints/"
 
 except ImportError as e:
     DQN_ERROR = f"Torch import failed: {e}"
@@ -153,7 +153,7 @@ class UnifiedAgent:
             return False
         
         try:
-            from rl.training.dqn_agent import DQNAgent
+            from reinforcement_learning.training.dqn_agent import DQNAgent
             # Create agent without parameters (they're loaded from checkpoint)
             self.dqn_agent = DQNAgent()
             # Load checkpoint

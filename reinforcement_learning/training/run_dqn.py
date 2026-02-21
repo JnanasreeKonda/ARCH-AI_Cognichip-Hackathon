@@ -53,7 +53,7 @@ def main():
     ]
     
     if mode == 'evaluate':
-        checkpoint = os.path.join(rl_dir, 'rl/checkpoints/dqn_final.pt')
+        checkpoint = os.path.join(rl_dir, 'reinforcement_learning/checkpoints/dqn_final.pt')
         if os.path.exists(checkpoint):
             cmd.extend(['--load', checkpoint])
             print(f"Loading: {checkpoint}")

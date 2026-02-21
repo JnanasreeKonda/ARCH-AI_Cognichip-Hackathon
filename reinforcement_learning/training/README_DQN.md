@@ -116,7 +116,7 @@ Episode Summary:
 Evaluate a trained agent (greedy policy, no exploration):
 
 ```bash
-python main_dqn.py --mode evaluate --load rl/checkpoints/dqn_final.pt --iterations 20
+python main_dqn.py --mode evaluate --load reinforcement_learning/checkpoints/dqn_final.pt --iterations 20
 ```
 
 **What happens during evaluation:**
@@ -130,7 +130,7 @@ python main_dqn.py --mode evaluate --load rl/checkpoints/dqn_final.pt --iteratio
 Continue training from a checkpoint:
 
 ```bash
-python main_dqn.py --mode train --load rl/checkpoints/dqn_episode_30.pt --episodes 20
+python main_dqn.py --mode train --load reinforcement_learning/checkpoints/dqn_episode_30.pt --episodes 20
 ```
 
 ## 📊 Output Files
@@ -304,7 +304,7 @@ agent = DQNAgent(**DQN_CONFIG)
 
 2. **Evaluate trained agent**:
    ```bash
-   python main_dqn.py --mode evaluate --load rl/checkpoints/dqn_final.pt
+   python main_dqn.py --mode evaluate --load reinforcement_learning/checkpoints/dqn_final.pt
    ```
 
 3. **Compare with LLM agent**:
