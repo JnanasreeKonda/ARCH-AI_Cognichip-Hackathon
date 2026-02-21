@@ -23,6 +23,8 @@ from typing import Dict, List, Tuple
 # DQN Reinforcement Learning
 DQN_AVAILABLE = False
 DQN_CHECKPOINT = None
+DQN_ERROR = None
+
 try:
     import torch
     import sys
@@ -40,11 +42,18 @@ try:
                 DQN_AVAILABLE = True
                 break
             except ImportError as e:
-                print(f"DEBUG: Failed to import DQNAgent: {e}")
+                DQN_ERROR = f"Failed to import DQNAgent: {e}"
+                print(f"DEBUG: {DQN_ERROR}")
             except Exception as e:
-                print(f"DEBUG: Error during DQNAgent import: {e}")
+                DQN_ERROR = f"Error during DQNAgent import: {e}"
+                print(f"DEBUG: {DQN_ERROR}")
+    
+    if not DQN_CHECKPOINT:
+        DQN_ERROR = "No DQN checkpoint found in rl/checkpoints/"
+
 except ImportError as e:
-    print(f"DEBUG: Torch import failed: {e}")
+    DQN_ERROR = f"Torch import failed: {e}"
+    print(f"DEBUG: {DQN_ERROR}")
 
 # OpenAI
 OPENAI_AVAILABLE = False
@@ -127,6 +136,9 @@ class UnifiedAgent:
             except Exception as e:
                 print(f"⚠️  DQN initialization failed: {e}")
                 print("   Falling back to LLM...")
+        else:
+            if DQN_ERROR:
+                print(f"⚠️  DQN not available: {DQN_ERROR}")
         
         # Priority 2: LLM (if API key available)
         if self._init_llm():

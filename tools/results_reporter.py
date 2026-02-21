@@ -444,12 +444,11 @@ def generate_all_reports(history: List[Tuple[Dict, Dict]], best_design: Tuple[Di
     
     # Export best design as Verilog
     try:
-        from tools.comparison_tools import export_best_design_verilog
+        from tools.generate_verilog import generate_verilog
         if best_design:
             best_params, best_metrics = best_design
-            f = export_best_design_verilog(best_params, best_metrics)
-            if f:
-                files_created.append(f)
+            generate_verilog(best_params['PAR'], best_params['BUFFER_DEPTH'], "rtl/best_design.v")
+            files_created.append("rtl/best_design.v")
     except Exception as e:
         print(f"⚠️  Verilog export failed: {e}")
     

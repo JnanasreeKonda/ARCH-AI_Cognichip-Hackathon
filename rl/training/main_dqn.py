@@ -344,6 +344,61 @@ def run_training(episodes=50, iterations_per_episode=20, agent=None):
     except Exception as e:
         print(f"\n⚠️  Report generation failed: {e}")
     
+    # Generate Verilog for best design
+    best_par = best_params["PAR"]
+    best_buffer_depth = best_params.get("BUFFER_DEPTH", 1024)
+    best_addr_width = int(math.ceil(math.log2(best_buffer_depth)))
+
+    best_rtl = f"""
+module reduce_sum #(
+    parameter PAR = {best_par},
+    parameter BUFFER_DEPTH = {best_buffer_depth}
+) (
+    input clk,
+    input rst,
+    input [31:0] in_data,
+    input in_valid,
+    output reg [31:0] out_data,
+    output reg out_valid
+);
+
+reg [31:0] acc [0:PAR-1];
+reg [{best_addr_width-1}:0] count;
+integer i;
+
+reg [31:0] final_sum;
+
+always @(posedge clk) begin
+    if (rst) begin
+        for (i = 0; i < PAR; i = i + 1)
+            acc[i] <= 0;
+        count <= 0;
+        out_valid <= 0;
+    end
+    else if (in_valid) begin
+        for (i = 0; i < PAR; i = i + 1)
+            acc[i] <= acc[i] + in_data + i;
+
+        count <= count + 1;
+
+        if (count == BUFFER_DEPTH - 1) begin
+            final_sum = 0;
+            for (i = 0; i < PAR; i = i + 1)
+                final_sum = final_sum + acc[i];
+
+            out_data <= final_sum;
+            out_valid <= 1;
+            count <= 0;
+        end
+    end
+end
+
+endmodule
+"""
+    with open("../../rtl/best_design.v", "w") as f:
+        f.write(best_rtl)
+    print(f"\n[SUCCESS] Best design Verilog code saved to rtl/best_design.v")
+
     return agent, all_history, global_best_design
 
 
@@ -441,6 +496,61 @@ def run_evaluation(agent, iterations=20):
     except Exception as e:
         print(f"\n⚠️  Report generation failed: {e}")
     
+    # Generate Verilog for best design
+    best_par = best_params["PAR"]
+    best_buffer_depth = best_params.get("BUFFER_DEPTH", 1024)
+    best_addr_width = int(math.ceil(math.log2(best_buffer_depth)))
+
+    best_rtl = f"""
+module reduce_sum #(
+    parameter PAR = {best_par},
+    parameter BUFFER_DEPTH = {best_buffer_depth}
+) (
+    input clk,
+    input rst,
+    input [31:0] in_data,
+    input in_valid,
+    output reg [31:0] out_data,
+    output reg out_valid
+);
+
+reg [31:0] acc [0:PAR-1];
+reg [{best_addr_width-1}:0] count;
+integer i;
+
+reg [31:0] final_sum;
+
+always @(posedge clk) begin
+    if (rst) begin
+        for (i = 0; i < PAR; i = i + 1)
+            acc[i] <= 0;
+        count <= 0;
+        out_valid <= 0;
+    end
+    else if (in_valid) begin
+        for (i = 0; i < PAR; i = i + 1)
+            acc[i] <= acc[i] + in_data + i;
+
+        count <= count + 1;
+
+        if (count == BUFFER_DEPTH - 1) begin
+            final_sum = 0;
+            for (i = 0; i < PAR; i = i + 1)
+                final_sum = final_sum + acc[i];
+
+            out_data <= final_sum;
+            out_valid <= 1;
+            count <= 0;
+        end
+    end
+end
+
+endmodule
+"""
+    with open("../../rtl/best_design.v", "w") as f:
+        f.write(best_rtl)
+    print(f"\n[SUCCESS] Best design Verilog code saved to rtl/best_design.v")
+
     return history, best_design
 
 
