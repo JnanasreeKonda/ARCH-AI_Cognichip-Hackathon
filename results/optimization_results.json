@@ -1,33 +1,33 @@
 {
-  "timestamp": "2026-02-20T15:54:38.980760",
+  "timestamp": "2026-02-20T23:23:15.323759",
   "summary": {
-    "total_iterations": 20,
+    "total_iterations": 4,
     "best_design": {
       "parameters": {
         "PAR": 2,
-        "BUFFER_DEPTH": 256
+        "BUFFER_DEPTH": 512
       },
       "metrics": {
-        "total_cells": 794,
-        "flip_flops": 210,
-        "logic_cells": 584,
-        "wires": 607,
+        "total_cells": 797,
+        "flip_flops": 212,
+        "logic_cells": 585,
+        "wires": 609,
         "public_wires": 9,
         "memories": 0,
         "processes": 0,
-        "area": 794,
+        "area": 797,
         "throughput": 2,
-        "area_per_throughput": 397.0,
-        "logic_depth": 10,
-        "critical_path_delay_ns": 2.1,
-        "max_frequency_mhz": 476.2,
+        "area_per_throughput": 398.5,
+        "logic_depth": 11,
+        "critical_path_delay_ns": 2.26,
+        "max_frequency_mhz": 443.0,
         "setup_time_ns": 0.2,
         "hold_time_ns": 0.1,
-        "clock_period_ns": 2.1,
+        "clock_period_ns": 2.26,
         "routing_penalty": 1.05,
         "constraints_violated": [],
         "constraint_penalty": 0,
-        "objective": 992.5
+        "objective": 996.25
       }
     }
   },
@@ -35,32 +35,30 @@
     {
       "iteration": 1,
       "parameters": {
-        "PAR": 1,
-        "BUFFER_DEPTH": 256
+        "PAR": 2,
+        "BUFFER_DEPTH": 512
       },
       "metrics": {
-        "total_cells": 322,
-        "flip_flops": 146,
-        "logic_cells": 176,
-        "wires": 227,
-        "public_wires": 8,
+        "total_cells": 797,
+        "flip_flops": 212,
+        "logic_cells": 585,
+        "wires": 609,
+        "public_wires": 9,
         "memories": 0,
         "processes": 0,
-        "area": 322,
-        "throughput": 1,
-        "area_per_throughput": 322.0,
-        "logic_depth": 10,
-        "critical_path_delay_ns": 2.0,
-        "max_frequency_mhz": 500.0,
+        "area": 797,
+        "throughput": 2,
+        "area_per_throughput": 398.5,
+        "logic_depth": 11,
+        "critical_path_delay_ns": 2.26,
+        "max_frequency_mhz": 443.0,
         "setup_time_ns": 0.2,
         "hold_time_ns": 0.1,
-        "clock_period_ns": 2.0,
-        "routing_penalty": 1.0,
-        "constraints_violated": [
-          "Throughput=1 < 2"
-        ],
-        "constraint_penalty": 10000,
-        "objective": 10483.0
+        "clock_period_ns": 2.26,
+        "routing_penalty": 1.05,
+        "constraints_violated": [],
+        "constraint_penalty": 0,
+        "objective": 996.25
       }
     },
     {
@@ -95,549 +93,59 @@
     {
       "iteration": 3,
       "parameters": {
-        "PAR": 4,
-        "BUFFER_DEPTH": 1024
+        "PAR": 2,
+        "BUFFER_DEPTH": 2048
       },
       "metrics": {
-        "total_cells": 1777,
-        "flip_flops": 342,
-        "logic_cells": 1435,
-        "wires": 1469,
-        "public_wires": 11,
+        "total_cells": 809,
+        "flip_flops": 216,
+        "logic_cells": 593,
+        "wires": 619,
+        "public_wires": 9,
         "memories": 0,
         "processes": 0,
-        "area": 1777,
-        "throughput": 4,
-        "area_per_throughput": 444.25,
-        "logic_depth": 12,
-        "critical_path_delay_ns": 2.65,
-        "max_frequency_mhz": 378.1,
+        "area": 809,
+        "throughput": 2,
+        "area_per_throughput": 404.5,
+        "logic_depth": 13,
+        "critical_path_delay_ns": 2.57,
+        "max_frequency_mhz": 388.7,
         "setup_time_ns": 0.2,
         "hold_time_ns": 0.1,
-        "clock_period_ns": 2.65,
-        "routing_penalty": 1.15,
-        "constraints_violated": [
-          "Area=1777 > 1500"
-        ],
-        "constraint_penalty": 11846.666666666668,
-        "objective": 13845.791666666668
+        "clock_period_ns": 2.57,
+        "routing_penalty": 1.05,
+        "constraints_violated": [],
+        "constraint_penalty": 0,
+        "objective": 1011.25
       }
     },
     {
       "iteration": 4,
       "parameters": {
-        "PAR": 8,
-        "BUFFER_DEPTH": 2048
-      },
-      "metrics": {
-        "total_cells": 3707,
-        "flip_flops": 600,
-        "logic_cells": 3107,
-        "wires": 3159,
-        "public_wires": 15,
-        "memories": 0,
-        "processes": 0,
-        "area": 3707,
-        "throughput": 8,
-        "area_per_throughput": 463.375,
-        "logic_depth": 13,
-        "critical_path_delay_ns": 3.31,
-        "max_frequency_mhz": 302.3,
-        "setup_time_ns": 0.2,
-        "hold_time_ns": 0.1,
-        "clock_period_ns": 3.31,
-        "routing_penalty": 1.35,
-        "constraints_violated": [
-          "Area=3707 > 1500",
-          "FFs=600 > 400"
-        ],
-        "constraint_penalty": 29713.333333333332,
-        "objective": 33652.02083333333
-      }
-    },
-    {
-      "iteration": 5,
-      "parameters": {
         "PAR": 2,
-        "BUFFER_DEPTH": 512
-      },
-      "metrics": {
-        "total_cells": 797,
-        "flip_flops": 212,
-        "logic_cells": 585,
-        "wires": 609,
-        "public_wires": 9,
-        "memories": 0,
-        "processes": 0,
-        "area": 797,
-        "throughput": 2,
-        "area_per_throughput": 398.5,
-        "logic_depth": 11,
-        "critical_path_delay_ns": 2.26,
-        "max_frequency_mhz": 443.0,
-        "setup_time_ns": 0.2,
-        "hold_time_ns": 0.1,
-        "clock_period_ns": 2.26,
-        "routing_penalty": 1.05,
-        "constraints_violated": [],
-        "constraint_penalty": 0,
-        "objective": 996.25
-      }
-    },
-    {
-      "iteration": 6,
-      "parameters": {
-        "PAR": 2,
-        "BUFFER_DEPTH": 512
-      },
-      "metrics": {
-        "total_cells": 797,
-        "flip_flops": 212,
-        "logic_cells": 585,
-        "wires": 609,
-        "public_wires": 9,
-        "memories": 0,
-        "processes": 0,
-        "area": 797,
-        "throughput": 2,
-        "area_per_throughput": 398.5,
-        "logic_depth": 11,
-        "critical_path_delay_ns": 2.26,
-        "max_frequency_mhz": 443.0,
-        "setup_time_ns": 0.2,
-        "hold_time_ns": 0.1,
-        "clock_period_ns": 2.26,
-        "routing_penalty": 1.05,
-        "constraints_violated": [],
-        "constraint_penalty": 0,
-        "objective": 996.25
-      }
-    },
-    {
-      "iteration": 7,
-      "parameters": {
-        "PAR": 2,
-        "BUFFER_DEPTH": 512
-      },
-      "metrics": {
-        "total_cells": 797,
-        "flip_flops": 212,
-        "logic_cells": 585,
-        "wires": 609,
-        "public_wires": 9,
-        "memories": 0,
-        "processes": 0,
-        "area": 797,
-        "throughput": 2,
-        "area_per_throughput": 398.5,
-        "logic_depth": 11,
-        "critical_path_delay_ns": 2.26,
-        "max_frequency_mhz": 443.0,
-        "setup_time_ns": 0.2,
-        "hold_time_ns": 0.1,
-        "clock_period_ns": 2.26,
-        "routing_penalty": 1.05,
-        "constraints_violated": [],
-        "constraint_penalty": 0,
-        "objective": 996.25
-      }
-    },
-    {
-      "iteration": 8,
-      "parameters": {
-        "PAR": 16,
-        "BUFFER_DEPTH": 256
-      },
-      "metrics": {
-        "total_cells": 7463,
-        "flip_flops": 1106,
-        "logic_cells": 6357,
-        "wires": 6438,
-        "public_wires": 23,
-        "memories": 0,
-        "processes": 0,
-        "area": 7463,
-        "throughput": 16,
-        "area_per_throughput": 466.4375,
-        "logic_depth": 10,
-        "critical_path_delay_ns": 3.5,
-        "max_frequency_mhz": 285.7,
-        "setup_time_ns": 0.2,
-        "hold_time_ns": 0.1,
-        "clock_period_ns": 3.5,
-        "routing_penalty": 1.75,
-        "constraints_violated": [
-          "Area=7463 > 1500",
-          "FFs=1106 > 400"
-        ],
-        "constraint_penalty": 54753.333333333336,
-        "objective": 62449.552083333336
-      }
-    },
-    {
-      "iteration": 9,
-      "parameters": {
-        "PAR": 2,
-        "BUFFER_DEPTH": 512
-      },
-      "metrics": {
-        "total_cells": 797,
-        "flip_flops": 212,
-        "logic_cells": 585,
-        "wires": 609,
-        "public_wires": 9,
-        "memories": 0,
-        "processes": 0,
-        "area": 797,
-        "throughput": 2,
-        "area_per_throughput": 398.5,
-        "logic_depth": 11,
-        "critical_path_delay_ns": 2.26,
-        "max_frequency_mhz": 443.0,
-        "setup_time_ns": 0.2,
-        "hold_time_ns": 0.1,
-        "clock_period_ns": 2.26,
-        "routing_penalty": 1.05,
-        "constraints_violated": [],
-        "constraint_penalty": 0,
-        "objective": 996.25
-      }
-    },
-    {
-      "iteration": 10,
-      "parameters": {
-        "PAR": 32,
-        "BUFFER_DEPTH": 2048
-      },
-      "metrics": {
-        "total_cells": 15086,
-        "flip_flops": 2136,
-        "logic_cells": 12950,
-        "wires": 13098,
-        "public_wires": 39,
-        "memories": 0,
-        "processes": 0,
-        "area": 15086,
-        "throughput": 32,
-        "area_per_throughput": 471.4375,
-        "logic_depth": 13,
-        "critical_path_delay_ns": 6.25,
-        "max_frequency_mhz": 160.1,
-        "setup_time_ns": 0.2,
-        "hold_time_ns": 0.1,
-        "clock_period_ns": 6.25,
-        "routing_penalty": 2.55,
-        "constraints_violated": [
-          "Area=15086 > 1500",
-          "FFs=2136 > 400"
-        ],
-        "constraint_penalty": 105573.33333333334,
-        "objective": 120895.05208333334
-      }
-    },
-    {
-      "iteration": 11,
-      "parameters": {
-        "PAR": 1,
-        "BUFFER_DEPTH": 512
-      },
-      "metrics": {
-        "total_cells": 325,
-        "flip_flops": 148,
-        "logic_cells": 177,
-        "wires": 229,
-        "public_wires": 8,
-        "memories": 0,
-        "processes": 0,
-        "area": 325,
-        "throughput": 1,
-        "area_per_throughput": 325.0,
-        "logic_depth": 11,
-        "critical_path_delay_ns": 2.15,
-        "max_frequency_mhz": 465.1,
-        "setup_time_ns": 0.2,
-        "hold_time_ns": 0.1,
-        "clock_period_ns": 2.15,
-        "routing_penalty": 1.0,
-        "constraints_violated": [
-          "Throughput=1 < 2"
-        ],
-        "constraint_penalty": 10000,
-        "objective": 10487.5
-      }
-    },
-    {
-      "iteration": 12,
-      "parameters": {
-        "PAR": 1,
-        "BUFFER_DEPTH": 256
-      },
-      "metrics": {
-        "total_cells": 322,
-        "flip_flops": 146,
-        "logic_cells": 176,
-        "wires": 227,
-        "public_wires": 8,
-        "memories": 0,
-        "processes": 0,
-        "area": 322,
-        "throughput": 1,
-        "area_per_throughput": 322.0,
-        "logic_depth": 10,
-        "critical_path_delay_ns": 2.0,
-        "max_frequency_mhz": 500.0,
-        "setup_time_ns": 0.2,
-        "hold_time_ns": 0.1,
-        "clock_period_ns": 2.0,
-        "routing_penalty": 1.0,
-        "constraints_violated": [
-          "Throughput=1 < 2"
-        ],
-        "constraint_penalty": 10000,
-        "objective": 10483.0
-      }
-    },
-    {
-      "iteration": 13,
-      "parameters": {
-        "PAR": 1,
-        "BUFFER_DEPTH": 256
-      },
-      "metrics": {
-        "total_cells": 322,
-        "flip_flops": 146,
-        "logic_cells": 176,
-        "wires": 227,
-        "public_wires": 8,
-        "memories": 0,
-        "processes": 0,
-        "area": 322,
-        "throughput": 1,
-        "area_per_throughput": 322.0,
-        "logic_depth": 10,
-        "critical_path_delay_ns": 2.0,
-        "max_frequency_mhz": 500.0,
-        "setup_time_ns": 0.2,
-        "hold_time_ns": 0.1,
-        "clock_period_ns": 2.0,
-        "routing_penalty": 1.0,
-        "constraints_violated": [
-          "Throughput=1 < 2"
-        ],
-        "constraint_penalty": 10000,
-        "objective": 10483.0
-      }
-    },
-    {
-      "iteration": 14,
-      "parameters": {
-        "PAR": 4,
         "BUFFER_DEPTH": 1024
       },
       "metrics": {
-        "total_cells": 1777,
-        "flip_flops": 342,
-        "logic_cells": 1435,
-        "wires": 1469,
-        "public_wires": 11,
+        "total_cells": 803,
+        "flip_flops": 214,
+        "logic_cells": 589,
+        "wires": 614,
+        "public_wires": 9,
         "memories": 0,
         "processes": 0,
-        "area": 1777,
-        "throughput": 4,
-        "area_per_throughput": 444.25,
+        "area": 803,
+        "throughput": 2,
+        "area_per_throughput": 401.5,
         "logic_depth": 12,
-        "critical_path_delay_ns": 2.65,
-        "max_frequency_mhz": 378.1,
+        "critical_path_delay_ns": 2.42,
+        "max_frequency_mhz": 414.1,
         "setup_time_ns": 0.2,
         "hold_time_ns": 0.1,
-        "clock_period_ns": 2.65,
-        "routing_penalty": 1.15,
-        "constraints_violated": [
-          "Area=1777 > 1500"
-        ],
-        "constraint_penalty": 11846.666666666668,
-        "objective": 13845.791666666668
-      }
-    },
-    {
-      "iteration": 15,
-      "parameters": {
-        "PAR": 1,
-        "BUFFER_DEPTH": 256
-      },
-      "metrics": {
-        "total_cells": 322,
-        "flip_flops": 146,
-        "logic_cells": 176,
-        "wires": 227,
-        "public_wires": 8,
-        "memories": 0,
-        "processes": 0,
-        "area": 322,
-        "throughput": 1,
-        "area_per_throughput": 322.0,
-        "logic_depth": 10,
-        "critical_path_delay_ns": 2.0,
-        "max_frequency_mhz": 500.0,
-        "setup_time_ns": 0.2,
-        "hold_time_ns": 0.1,
-        "clock_period_ns": 2.0,
-        "routing_penalty": 1.0,
-        "constraints_violated": [
-          "Throughput=1 < 2"
-        ],
-        "constraint_penalty": 10000,
-        "objective": 10483.0
-      }
-    },
-    {
-      "iteration": 16,
-      "parameters": {
-        "PAR": 4,
-        "BUFFER_DEPTH": 512
-      },
-      "metrics": {
-        "total_cells": 1772,
-        "flip_flops": 340,
-        "logic_cells": 1432,
-        "wires": 1465,
-        "public_wires": 11,
-        "memories": 0,
-        "processes": 0,
-        "area": 1772,
-        "throughput": 4,
-        "area_per_throughput": 443.0,
-        "logic_depth": 11,
-        "critical_path_delay_ns": 2.47,
-        "max_frequency_mhz": 404.4,
-        "setup_time_ns": 0.2,
-        "hold_time_ns": 0.1,
-        "clock_period_ns": 2.47,
-        "routing_penalty": 1.15,
-        "constraints_violated": [
-          "Area=1772 > 1500"
-        ],
-        "constraint_penalty": 11813.333333333334,
-        "objective": 13806.833333333334
-      }
-    },
-    {
-      "iteration": 17,
-      "parameters": {
-        "PAR": 8,
-        "BUFFER_DEPTH": 1024
-      },
-      "metrics": {
-        "total_cells": 3701,
-        "flip_flops": 598,
-        "logic_cells": 3103,
-        "wires": 3154,
-        "public_wires": 15,
-        "memories": 0,
-        "processes": 0,
-        "area": 3701,
-        "throughput": 8,
-        "area_per_throughput": 462.625,
-        "logic_depth": 12,
-        "critical_path_delay_ns": 3.11,
-        "max_frequency_mhz": 322.1,
-        "setup_time_ns": 0.2,
-        "hold_time_ns": 0.1,
-        "clock_period_ns": 3.11,
-        "routing_penalty": 1.35,
-        "constraints_violated": [
-          "Area=3701 > 1500",
-          "FFs=598 > 400"
-        ],
-        "constraint_penalty": 29673.333333333332,
-        "objective": 33605.64583333333
-      }
-    },
-    {
-      "iteration": 18,
-      "parameters": {
-        "PAR": 2,
-        "BUFFER_DEPTH": 256
-      },
-      "metrics": {
-        "total_cells": 794,
-        "flip_flops": 210,
-        "logic_cells": 584,
-        "wires": 607,
-        "public_wires": 9,
-        "memories": 0,
-        "processes": 0,
-        "area": 794,
-        "throughput": 2,
-        "area_per_throughput": 397.0,
-        "logic_depth": 10,
-        "critical_path_delay_ns": 2.1,
-        "max_frequency_mhz": 476.2,
-        "setup_time_ns": 0.2,
-        "hold_time_ns": 0.1,
-        "clock_period_ns": 2.1,
+        "clock_period_ns": 2.42,
         "routing_penalty": 1.05,
         "constraints_violated": [],
         "constraint_penalty": 0,
-        "objective": 992.5
-      }
-    },
-    {
-      "iteration": 19,
-      "parameters": {
-        "PAR": 2,
-        "BUFFER_DEPTH": 256
-      },
-      "metrics": {
-        "total_cells": 794,
-        "flip_flops": 210,
-        "logic_cells": 584,
-        "wires": 607,
-        "public_wires": 9,
-        "memories": 0,
-        "processes": 0,
-        "area": 794,
-        "throughput": 2,
-        "area_per_throughput": 397.0,
-        "logic_depth": 10,
-        "critical_path_delay_ns": 2.1,
-        "max_frequency_mhz": 476.2,
-        "setup_time_ns": 0.2,
-        "hold_time_ns": 0.1,
-        "clock_period_ns": 2.1,
-        "routing_penalty": 1.05,
-        "constraints_violated": [],
-        "constraint_penalty": 0,
-        "objective": 992.5
-      }
-    },
-    {
-      "iteration": 20,
-      "parameters": {
-        "PAR": 2,
-        "BUFFER_DEPTH": 512
-      },
-      "metrics": {
-        "total_cells": 797,
-        "flip_flops": 212,
-        "logic_cells": 585,
-        "wires": 609,
-        "public_wires": 9,
-        "memories": 0,
-        "processes": 0,
-        "area": 797,
-        "throughput": 2,
-        "area_per_throughput": 398.5,
-        "logic_depth": 11,
-        "critical_path_delay_ns": 2.26,
-        "max_frequency_mhz": 443.0,
-        "setup_time_ns": 0.2,
-        "hold_time_ns": 0.1,
-        "clock_period_ns": 2.26,
-        "routing_penalty": 1.05,
-        "constraints_violated": [],
-        "constraint_penalty": 0,
-        "objective": 996.25
+        "objective": 1003.75
       }
     }
   ]

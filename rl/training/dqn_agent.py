@@ -84,12 +84,13 @@ class ReplayBuffer:
         """Sample random mini-batch"""
         batch = random.sample(self.buffer, batch_size)
         states, actions, rewards, next_states, dones = zip(*batch)
+        # Convert to numpy arrays first, then to tensors (faster)
         return (
-            torch.FloatTensor(states),
-            torch.LongTensor(actions),
-            torch.FloatTensor(rewards),
-            torch.FloatTensor(next_states),
-            torch.FloatTensor(dones)
+            torch.FloatTensor(np.array(states)),
+            torch.LongTensor(np.array(actions)),
+            torch.FloatTensor(np.array(rewards)),
+            torch.FloatTensor(np.array(next_states)),
+            torch.FloatTensor(np.array(dones))
         )
     
     def __len__(self):

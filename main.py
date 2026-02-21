@@ -5,7 +5,7 @@ Main optimization loop that integrates LLM agent, synthesis, simulation,
 and reporting to find optimal microarchitecture designs.
 """
 
-from llm.llm_agent import propose_design
+from llm.unified_agent import propose_design
 from tools.run_yosys import synthesize
 from tools.simulate import simulate
 from tools.results_reporter import generate_all_reports
@@ -55,6 +55,47 @@ def safe_print(text):
 
 # Disable simulations (optional - synthesis works perfectly without them)
 os.environ.setdefault('RUN_SIMULATION', 'false')
+
+# =============================================================================
+# UNIFIED AGENT CONFIGURATION CHECK  
+# =============================================================================
+safe_print("\n" + "="*70)
+safe_print(" [AI] UNIFIED AGENT SYSTEM")
+safe_print("="*70)
+safe_print("\nAgent Priority:")
+safe_print("  1. DQN (Reinforcement Learning) - if trained model exists")
+safe_print("  2. LLM (Gemini/GPT-4/Claude) - if API key available")
+safe_print("  3. Heuristic (Rule-based) - fallback")
+safe_print("\nChecking available agents...")
+
+# Check DQN
+dqn_available = False
+if os.path.exists('rl/checkpoints/dqn_final.pt'):
+    safe_print("  [OK] DQN checkpoint found: rl/checkpoints/dqn_final.pt")
+    dqn_available = True
+elif os.path.exists('rl/checkpoints/dqn_best.pt'):
+    safe_print("  [OK] DQN checkpoint found: rl/checkpoints/dqn_best.pt")
+    dqn_available = True
+else:
+    safe_print("  [ ] No DQN checkpoint (train with: python3 run_dqn_quick.py)")
+
+# Check LLM APIs
+llm_available = []
+if os.environ.get('GEMINI_API_KEY'):
+    llm_available.append('Gemini')
+if os.environ.get('OPENAI_API_KEY'):
+    llm_available.append('GPT-4')
+if os.environ.get('ANTHROPIC_API_KEY'):
+    llm_available.append('Claude')
+
+if llm_available:
+    safe_print(f"  [OK] LLM API keys detected: {', '.join(llm_available)}")
+else:
+    safe_print("  [ ] No LLM API keys")
+
+# Summary
+safe_print("\nAgent will be auto-selected (priority: DQN > LLM > Heuristic)")
+safe_print("="*70)
 
 # =============================================================================
 # DESIGN CONSTRAINTS (Real-world optimization requirements)
@@ -144,7 +185,7 @@ def calculate_objective(params, metrics):
 #   - BUFFER_DEPTH: 256, 512, 1024, 2048 (accumulation depth)
 # =============================================================================
 
-ITERATIONS = 20
+ITERATIONS = 4#20
 history = []
 best_design = None
 best_objective = float('inf')

@@ -11,7 +11,7 @@ import sys
 # Ensure rl module can be imported
 sys.path.insert(0, os.path.dirname(__file__))
 
-from rl.dqn_agent import DQNAgent
+from rl.training.dqn_agent import DQNAgent
 from main_dqn import run_training, run_evaluation
 
 def quick_train():
@@ -29,8 +29,8 @@ def quick_train():
     input("\n   Press ENTER to start training...")
     
     # Create directories
-    os.makedirs('rl/checkpoints', exist_ok=True)
-    os.makedirs('results/rl', exist_ok=True)
+    os.makedirs('../checkpoints', exist_ok=True)
+    os.makedirs('../../results/rl', exist_ok=True)
     
     # Initialize agent with good defaults
     agent = DQNAgent(
@@ -46,7 +46,7 @@ def quick_train():
     
     # Run quick training
     agent, history, best_design = run_training(
-        episodes=10,
+        episodes=50,#10,
         iterations_per_episode=10,
         agent=agent
     )
@@ -69,7 +69,7 @@ def quick_evaluate():
     print(" 🎯 QUICK START - DQN EVALUATION")
     print("="*70)
     
-    checkpoint_path = 'rl/checkpoints/dqn_final.pt'
+    checkpoint_path = '../checkpoints/dqn_final.pt'
     
     if not os.path.exists(checkpoint_path):
         print(f"\n   ⚠️  ERROR: No trained model found at {checkpoint_path}")

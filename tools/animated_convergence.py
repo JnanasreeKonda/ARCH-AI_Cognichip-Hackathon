@@ -91,10 +91,10 @@ def create_convergence_animation(history: List[Tuple[Dict, Dict]],
             ax2.scatter([pars[best_idx]], [total_cells[best_idx]],
                        c='gold', s=400, marker='D', edgecolors='black',
                        linewidth=2, zorder=5, label='Best')
+            ax2.legend(fontsize=10)  # Only show legend when we have a labeled element
         ax2.set_xlabel('PAR', fontweight='bold', fontsize=11)
         ax2.set_ylabel('Total Cells', fontweight='bold', fontsize=11)
         ax2.set_title('Design Space Exploration', fontweight='bold', fontsize=12)
-        ax2.legend(fontsize=10)
         ax2.grid(True, alpha=0.3)
         plt.colorbar(scatter, ax=ax2, label='Objective')
         

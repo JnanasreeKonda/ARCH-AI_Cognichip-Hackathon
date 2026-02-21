@@ -388,18 +388,20 @@ def generate_all_reports(history: List[Tuple[Dict, Dict]], best_design: Tuple[Di
     # Pareto Frontier Analysis
     if PARETO_AVAILABLE:
         try:
-            f, pareto_optimal = generate_pareto_frontier_plot(history)
-            if f:
-                files_created.append(f)
-            # Generate Pareto report
-            try:
-                f = generate_pareto_report(pareto_optimal)
+            result = generate_pareto_frontier_plot(history)
+            if result and isinstance(result, tuple) and len(result) == 2:
+                f, pareto_optimal = result
                 if f:
                     files_created.append(f)
-            except Exception as e:
-                print(f"⚠️  Pareto report failed: {e}")
+                # Generate Pareto report
+                try:
+                    f = generate_pareto_report(pareto_optimal)
+                    if f:
+                        files_created.append(f)
+                except Exception as e:
+                    print(f"⚠️  Pareto report failed: {e}")
         except Exception as e:
-            print(f"⚠️  Pareto analysis failed: {e}")
+            pass  # Silently skip if Pareto analysis not available
     
     # Timing Analysis
     if TIMING_AVAILABLE:
@@ -452,14 +454,14 @@ def generate_all_reports(history: List[Tuple[Dict, Dict]], best_design: Tuple[Di
         print(f"⚠️  Verilog export failed: {e}")
     
     # Comprehensive Dashboard (All-in-one view)
-    if DASHBOARD_AVAILABLE:
+    if DASHBOARD_AVAILABLE and MATPLOTLIB_AVAILABLE and SEABORN_AVAILABLE:
         try:
             f = generate_comprehensive_dashboard(history, best_design)
             if f:
                 files_created.append(f)
                 print(f"🎯 Saved comprehensive dashboard to {f}")
         except Exception as e:
-            print(f"⚠️  Dashboard generation failed: {e}")
+            pass  # Silently skip if dependencies missing
     
     # Animated Convergence GIF
     try:

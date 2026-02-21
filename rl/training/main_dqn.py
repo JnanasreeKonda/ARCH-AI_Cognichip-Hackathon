@@ -9,7 +9,7 @@ Usage:
     python main_dqn.py --mode evaluate --load checkpoints/best_agent.pt
 """
 
-from rl.dqn_agent import DQNAgent
+from rl.training.dqn_agent import DQNAgent
 from tools.run_yosys import synthesize
 from tools.simulate import simulate
 from tools.results_reporter import generate_all_reports
@@ -155,11 +155,11 @@ end
 endmodule
 """
 
-    with open("rtl/tmp.v", "w") as f:
+    with open("../../rtl/tmp.v", "w") as f:
         f.write(rtl)
 
     # Synthesize and collect metrics
-    area, log, metrics = synthesize("rtl/tmp.v", debug=debug)
+    area, log, metrics = synthesize("../../rtl/tmp.v", debug=debug)
 
     # Add derived metrics
     metrics["area"] = area
@@ -169,7 +169,7 @@ endmodule
     # Run functional simulation (if simulator available)
     run_simulation = os.environ.get('RUN_SIMULATION', 'true').lower() == 'true'
     if run_simulation:
-        sim_success, sim_metrics, sim_log = simulate("rtl/tmp.v", params)
+        sim_success, sim_metrics, sim_log = simulate("../../rtl/tmp.v", params)
         metrics.update(sim_metrics)
         if not sim_success and debug:
             print(f"  ⚠️  Simulation: FAILED")
@@ -278,10 +278,11 @@ def run_training(episodes=50, iterations_per_episode=20, agent=None):
             if iteration % 5 == 0 or iteration == iterations_per_episode - 1:
                 par = params['PAR']
                 bd = params['BUFFER_DEPTH']
-                cells = metrics.get('total_cells', 'N/A')
+                cells = metrics.get('total_cells', 0) or 0  # Handle None
+                loss_val = f"{loss:.4f}" if loss else "0.0000"
                 print(f"   Iter {iteration+1:2d}: PAR={par:2d}, BD={bd:4d}, "
                       f"Cells={cells:4d}, Obj={objective:6.1f}, Reward={reward:5.1f}, "
-                      f"Loss={loss:.4f if loss else 0:.4f}")
+                      f"Loss={loss_val}")
         
         # Episode summary
         episode_rewards.append(episode_reward)
@@ -446,7 +447,7 @@ def run_evaluation(agent, iterations=20):
 def plot_training_curves(episode_rewards, episode_objectives, losses):
     """Plot training progress"""
     try:
-        os.makedirs('results/rl', exist_ok=True)
+        os.makedirs('../../results/rl', exist_ok=True)
         
         fig, axes = plt.subplots(1, 3, figsize=(15, 4))
         
@@ -498,8 +499,8 @@ def main():
     args = parser.parse_args()
     
     # Create directories
-    os.makedirs('rl/checkpoints', exist_ok=True)
-    os.makedirs('results/rl', exist_ok=True)
+    os.makedirs('../checkpoints', exist_ok=True)
+    os.makedirs('../../results/rl', exist_ok=True)
     
     # Initialize agent
     agent = DQNAgent(
